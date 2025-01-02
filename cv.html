@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jofunpe - Página Personal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        /* Variables para fácil personalización */
+        :root[data-theme="light"] {
+            --primary-color: #2d3436;
+            --secondary-color: #0984e3;
+            --text-color: #2d3436;
+            --bg-color: #f5f6fa;
+            --accent-color: #00b894;
+            --card-bg: white;
+        }
+
+        /* Modo oscuro */
+        :root[data-theme="dark"] {
+            --primary-color: #f5f6fa;
+            --secondary-color: #0984e3;
+            --text-color: #f5f6fa;
+            --bg-color: #1a1a1a;
+            --accent-color: #00b894;
+            --card-bg: #2d2d2d;
+        }
+
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Botón de modo oscuro */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background-color: var(--secondary-color);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* Banner y contenedor de perfil */
+        .profile-banner-container {
+            position: relative;
+            width: 100%;
+            padding-top: 40px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .banner-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        /* Sección de perfil */
+        .profile-section {
+            position: relative;
+            text-align: center;
+            margin-bottom: 40px;
+            z-index: 2;
+        }
+
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 20px auto;
+            border: 5px solid var(--secondary-color);
+            animation: fadeIn 1s;
+        }
+
+        /* Estado actual */
+        .status {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 10px 0;
+            animation: slideInRight 1s;
+        }
+
+        /* Redes sociales - AHORA CON EL MISMO ESTILO QUE EL MAIL */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .social-links a {
+            background-color: var(--accent-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        /* Email link */
+        .email-link {
+            background-color: var(--accent-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .email-link:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        /* Sección de descripción */
+        .description {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            animation: fadeIn 1s;
+            transition: background-color 0.3s;
+        }
+
+        /* Pasatiempos */
+        .hobbies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .hobby {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            animation: bounceIn 1s;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .hobby:hover {
+            transform: translateY(-5px) rotate(3deg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background-color: var(--secondary-color);
+        }
+
+        /* Empleo */
+        .job-search {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            animation: slideInLeft 1s;
+        }
+
+        /* Últimas novedades */
+        .latest-news {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+
+        .news-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Variables configurables
+        const config = {
+            // Estado actual (déjalo vacío si no quieres mostrar nada)
+            estado: "🐍 Empezando con python 🐍",
+            
+            // Imagen de perfil y banner
+            profileImage: "img/cara.png",
+            bannerImage: "img/tmp2.png", // Deja vacío ("") si no quieres banner
+            
+            // Pasatiempos (añade o quita elementos del array)
+            pasatiempos: ["Anime", "Manga", "Sistemas", "Videojuegos", "Deporte"],
+            
+            // Últimas novedades (0 para ocultar, 1 para mostrar)
+            mostrarNovedades: 1,
+            // Imagen y texto de las novedades
+            novedadesImagen: "img/2.png",
+            novedadesTexto: "Tras meses parado, vuelvo a los streams en twitch!!!"
+        };
+
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            
+            // Actualizar el texto del botón
+            const button = document.getElementById('theme-toggle');
+            button.textContent = newTheme === 'light' ? '🌙 Modo Oscuro' : '☀️ Modo Claro';
+        }
+
+        // Función para cargar el contenido dinámico
+        window.onload = function() {
+            // Cargar banner si existe
+            const bannerImg = document.getElementById('banner-image');
+            if (config.bannerImage) {
+                bannerImg.src = config.bannerImage;
+            } else {
+                bannerImg.style.display = 'none';
+            }
+
+            // Cargar estado
+            if (config.estado) {
+                document.getElementById('status').textContent = config.estado;
+            } else {
+                document.getElementById('status').style.display = 'none';
+            }
+
+            // Cargar pasatiempos
+            const hobbiesContainer = document.getElementById('hobbies');
+            config.pasatiempos.forEach(hobby => {
+                const hobbyElement = document.createElement('div');
+                hobbyElement.className = 'hobby';
+                hobbyElement.textContent = hobby;
+                hobbiesContainer.appendChild(hobbyElement);
+            });
+
+            // Cargar novedades
+            if (config.mostrarNovedades) {
+                document.getElementById('latest-news').style.display = 'block';
+                document.getElementById('news-image').src = config.novedadesImagen;
+                document.getElementById('news-text').textContent = config.novedadesTexto;
+            } else {
+                document.getElementById('latest-news').style.display = 'none';
+            }
+        };
+    </script>
+
+    <!-- Botón de cambio de tema -->
+    <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+
+    <div class="container">
+        <!-- Sección de perfil con banner -->
+        <div class="profile-banner-container">
+            <img src="" alt="Banner" class="banner-image" id="banner-image">
+            <div class="profile-section">
+                <img src="img/cara.png" alt="Jofunpe" class="profile-image">
+                <div id="status" class="status"></div>
+            </div>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="social-links">
+            <a href="https://www.twitch.tv/jofunpe_wow" target="_blank">🟣 Twitch 🟣</a>
+            <a href="https://www.x.com/jofunpe" target="_blank">🐦 X (Twitter) 🐦</a>
+            <a href="https://www.youtube.com/@jofunpe" target="_blank">🔴 YouTube Principal 🔴</a>
+            <a href="https://www.youtube.com/@jofun2" target="_blank">🎮 YouTube juegos 🎮</a>
+            <a href="https://www.youtube.com/@jofunvlogs" target="_blank">📹 YouTube Vlogs 📹</a>
+            <a href="https://www.kick.com/jofunpe" target="_blank">🟢 Kick 🟢</a>
+            <a href="https://www.github.com/jofunpe" target="_blank">💻 GitHub 💻</a>
+            <a href="mailto:jofun2@pm.me" class="email-link" target="_blank">✉️ Email ✉️</a>
+        </div>
+
+        <!-- Descripción -->
+        <div class="description">
+            <h2>Sobre mí</h2>
+            <p>¡Hola! 👋 Soy José Funes (alias jofunpe), tengo 17 años (nacido el 14/12/2007) y me apasiona la informática, los videojuegos, el anime y la música (rock, metal, electrónica). Actualmente estoy estudiando de forma autodidacta ciberseguridad y programación, y en mi tiempo libre disfruto creando contenido, viendo anime y leyendo manga. 🚀</p>
+        </div>
+
+        <!-- Pasatiempos -->
+        <h2>Pasatiempos</h2>
+        <div id="hobbies" class="hobbies"></div>
+
+        <!-- Búsqueda de empleo -->
+        <div class="job-search">
+            <h2>Busco Empleo</h2>
+            <p>Estoy buscando un empleo de media jornada, con total flexibilidad para adaptarme a turnos de mañana o tarde. Soy una persona responsable, comprometida y siempre dispuesta a aprender rápido. No tengo problema en empezar desde cero y estoy dispuesto a trabajar con entusiasmo, aportando lo mejor de mí en cualquier tarea que se me asigne.</p>
+        </div>
+
+        <!-- Últimas novedades -->
+        <div id="latest-news" class="latest-news">
+            <h2>Últimas Novedades</h2>
+            <img id="news-image" class="news-image" alt="Última novedad">
+            <p id="news-text"></p>
+        </div>
+    </div>
+</body>
+</html>
