@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jofunpe - Página Personal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/favicon.png">
     <style>
         /* Variables para fácil personalización */
@@ -13,6 +14,7 @@
             --secondary-color: #0984e3;
             --text-color: #2d3436;
             --bg-color: #f5f6fa;
+            --bg-gradient: linear-gradient(135deg, #f5f6fa 0%, #e0e4ff 100%);
             --accent-color: #00b894;
             --card-bg: white;
         }
@@ -23,26 +25,27 @@
             --secondary-color: #0984e3;
             --text-color: #f5f6fa;
             --bg-color: #1a1a1a;
+            --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
             --accent-color: #00b894;
             --card-bg: #2d2d2d;
         }
 
         /* Estilos generales */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
+            background: var(--bg-gradient);
             color: var(--text-color);
             line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background 0.3s, color 0.3s;
         }
 
         /* Contenedor principal */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 40px;
         }
 
         /* Botón de modo oscuro */
@@ -56,12 +59,18 @@
             background-color: var(--secondary-color);
             color: white;
             cursor: pointer;
-            transition: transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
             z-index: 1000;
         }
 
         .theme-toggle:hover {
             transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
 
         /* Banner y contenedor de perfil */
@@ -99,6 +108,11 @@
             margin: 20px auto;
             border: 5px solid var(--secondary-color);
             animation: fadeIn 1s;
+            transition: transform 0.3s;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
         }
 
         /* Estado actual */
@@ -127,12 +141,15 @@
             border-radius: 20px;
             color: white !important;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
 
         .social-links a:hover {
             background-color: var(--secondary-color);
             transform: scale(1.1);
+            box-shadow: 0 0 10px var(--secondary-color);
         }
 
         /* Email link */
@@ -155,9 +172,14 @@
             padding: 20px;
             border-radius: 10px;
             margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             animation: fadeIn 1s;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+        }
+
+        .description:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
         /* Pasatiempos */
@@ -176,6 +198,8 @@
             border-radius: 15px;
             animation: bounceIn 1s;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
             cursor: pointer;
         }
 
@@ -183,6 +207,7 @@
             transform: translateY(-5px) rotate(3deg);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             background-color: var(--secondary-color);
+            box-shadow: 0 0 10px var(--secondary-color), 0 5px 15px rgba(0,0,0,0.2);
         }
 
         /* Empleo */
@@ -201,8 +226,13 @@
             padding: 20px;
             border-radius: 10px;
             margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+        }
+
+        .latest-news:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
         .news-image {
@@ -210,6 +240,47 @@
             height: auto;
             border-radius: 10px;
             margin: 10px 0;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        @media (min-width: 768px) {
+            .cards-row {
+                display: flex;
+                gap: 20px;
+            }
+            .cards-row > * {
+                flex: 1;
+            }
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: #fff;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .scroll-top:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -241,24 +312,25 @@
             <a href="mailto:info@jofunpe.com" class="email-link" target="_blank">✉️ Email ✉️</a>
         </div>
 
-        <!-- Descripción -->
-        <div class="description">
-            <h2>Sobre mí</h2>
-            <p>¡Hola! 👋 Soy José Funes (alias jofunpe), tengo 17 años (nacido el 14/12/2007) y me apasiona la informática, los videojuegos, el anime y la música (rock, metal, electrónica). Actualmente estoy estudiando de forma autodidacta ciberseguridad y programación, y en mi tiempo libre disfruto creando contenido, viendo anime y leyendo manga. 🚀</p>
+        <!-- Descripción y novedades -->
+        <div class="cards-row">
+            <div class="description reveal">
+                <h2>Sobre mí</h2>
+                <p>¡Hola! 👋 Soy José Funes (alias jofunpe), tengo 17 años (nacido el 14/12/2007) y me apasiona la informática, los videojuegos, el anime y la música (rock, metal, electrónica). Actualmente estoy estudiando de forma autodidacta ciberseguridad y programación, y en mi tiempo libre disfruto creando contenido, viendo anime y leyendo manga. 🚀</p>
+            </div>
+            <div id="latest-news" class="latest-news reveal">
+                <h2>Últimas Novedades</h2>
+                <img id="news-image" class="news-image" alt="Última novedad">
+                <p id="news-text"></p>
+            </div>
         </div>
 
         <!-- Pasatiempos -->
         <h2>Pasatiempos</h2>
-        <div id="hobbies" class="hobbies"></div>
-
-
-        <!-- Últimas novedades -->
-        <div id="latest-news" class="latest-news">
-            <h2>Últimas Novedades</h2>
-            <img id="news-image" class="news-image" alt="Última novedad">
-            <p id="news-text"></p>
-        </div>
+        <div id="hobbies" class="hobbies reveal"></div>
     </div>
+
+    <button id="scroll-top" class="scroll-top" onclick="scrollToTop()">⬆️</button>
     <script src="main.js"></script>
 </body>
 </html>
