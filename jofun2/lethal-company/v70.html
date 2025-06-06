@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notas del Parche V70 - Lethal Company</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    background: linear-gradient(to bottom, #0f0f0f, #1b1b1b);
+  }
+  header {
+    position: sticky;
+    top: 0;
+    background: rgba(31, 31, 31, 0.8);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 5rem 1rem 2rem;
+  }
+  h1,h2,h3 {
+    margin-top: 0;
+    font-weight: 600;
+  }
+  section h2 {
+    font-size: 1.75rem;
+    color: #fbbf24;
+    position: relative;
+    z-index: 1;
+  }
+  .card {
+    background: rgba(60, 60, 60, 0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(6px);
+  }
+  a.button {
+    display: inline-block;
+    background: #fbbf24;
+    color: #111;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  a.button:hover {
+    background: #f8af0c;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h2 style="font-size:0.875rem;letter-spacing:0.1em;color:#fbbf24;">Actualización importante — publicado el dom, 1&nbsp;de&nbsp;junio</h2>
+      <h1 style="font-size:2.25rem;">V70 - La Actualización de Incubación</h1>
+      <p style="color:#ddd;max-width:600px;">Cuánto tiempo sin vernos. La Compañía tiene una nueva actualización para todos vosotros, trabajadores incansables.</p>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>Notas del parche</h2>
+
+      <div class="card">
+        <h3>Se ha renovado el radar</h3>
+        <ul>
+          <li>Se añadió una <strong>cámara de rostro</strong> que te permite ver a tus compañeros en el terminal.</li>
+          <li>Se rediseñó la apariencia del radar, ahora usando <strong>sprites 2D</strong> para mostrar las habitaciones.</li>
+          <li>Se añadió una <strong>brújula</strong> al HUD y al terminal; hacer ping con tu escáner la hace más visible en la parte inferior de la pantalla.</li>
+          <li>Se añadió una <strong>línea</strong> en el radar que muestra el camino desde el jugador actualmente observado hasta la salida.</li>
+          <li>Se añadieron <strong>líneas de contorno</strong> para representar el terreno exterior.</li>
+        </ul>
+        <p style="color:#bbb;">Esto debería poner el radar al nivel visual del resto del juego y facilitar marcar la diferencia como informático.</p>
+      </div>
+
+      <div class="card">
+        <h3>Se ha añadido nuevo mobiliario</h3>
+        <ul>
+          <li>Frigorífico</li>
+          <li>Sillón</li>
+          <li>Caseta para perro</li>
+          <li>Microondas</li>
+          <li>Silla eléctrica</li>
+        </ul>
+        <p style="color:#bbb;">¡Algunos de estos objetos te permiten sentarte o guardar chatarra dentro!</p>
+      </div>
+
+      <div class="card">
+        <h3>Nueva criatura diurna de exterior</h3>
+        <p>Se ha añadido el <strong>Giant Sapsucker</strong><span style="font-style:italic;"> (común en Vow)</span>.</p>
+      </div>
+
+      <div class="card">
+        <h3>Se ha reestructurado el interior de la mansión</h3>
+        <ul>
+          <li>Se añadieron unas <strong>8 habitaciones/pasillos</strong> nuevos con muchos objetos interactivos donde esconder chatarra.</li>
+          <li>Se añadieron <strong>armarios</strong> que pueden aparecer en los pasillos.</li>
+          <li>Se redujo la altura vertical de muchas habitaciones/pasillos de la mansión a una escala más precisa.</li>
+          <li>Se renovó la lógica usada para generar los diseños de la mansión.</li>
+        </ul>
+        <p style="color:#bbb;">Ahora la mansión debería ser más interesante de explorar, con más oportunidades de retroceder sobre tus pasos y crear diseños no lineales.</p>
+      </div>
+
+      <div class="card">
+        <h3>Nuevo registro de Sigurd: «Sinergia de equipo»</h3>
+        <p>Tengo pensado reestructurar la forma en la que se encuentran los registros de Sigurd para que aparezcan como chatarra rara en los interiores. Por ahora, este está en <strong>Artifice</strong>.</p>
+      </div>
+
+      <div class="card">
+        <h3>Se ha actualizado el Company Cruiser</h3>
+        <ul>
+          <li><strong>Materiales reforzados</strong>. Ahora puede soportar golpes contra muchos, muchos árboles y rocas.</li>
+          <li>El Company Cruiser ahora intenta colocarse en posición vertical de forma pasiva.</li>
+          <li>Ahora hay un <strong>pequeño impulso</strong> al pisar el pedal después de cambiar de marcha.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p>— Varias correcciones menores</p>
+        <p style="color:#bbb;">Esta es la primera de una serie de actualizaciones en las que estaré reestructurando o añadiendo salas a cada interior, así como nuevas criaturas, culminando en la actualización que sacará el juego del Acceso Anticipado. ¡Espero que disfrutéis los cambios!</p>
+      </div>
+
+      <div class="card">
+        <p>Mi amigo, que compuso la música para la bola de discoteca y el boombox, ha colaborado con Makeship y ha creado un peluche del único e inigualable <strong>Zed Dog</strong>. Como sabréis (o puede que no), ¡es el objeto de chatarra más raro de Lethal Company! He aumentado ligeramente su probabilidad de aparición para esta ocasión especial. ¡Consigue el tuyo!</p>
+        <a class="button" href="https://www.makeship.com/products/zed-dog" target="_blank" rel="noopener noreferrer">Comprar peluche Zed Dog</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
