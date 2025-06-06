@@ -13,8 +13,8 @@ const config = {
     // Últimas novedades (0 para ocultar, 1 para mostrar)
     mostrarNovedades: 1,
     // Imagen y texto de las novedades
-    novedadesImagen: "img/GgK_tcNbYAEoRMw.jpg",
-    novedadesTexto: "He subido mi primer video a mi canal de vlogs de YouTube. Este trata la ansieda social. Aquí tienes el link: https://www.youtube.com/watch?v=nsgHHPc01b8"
+    novedadesImagen: "img/codex.png",
+    novedadesTexto: 'Web remodelada con la ayuda de <a href="https://openai.com/es-ES/index/introducing-codex/" target="_blank" style="color: red;">codex</a> de OpenAI'
 };
 
 // Función para cambiar el tema
@@ -69,7 +69,7 @@ window.onload = function () {
     if (config.mostrarNovedades) {
         document.getElementById('latest-news').style.display = 'block';
         document.getElementById('news-image').src = config.novedadesImagen;
-        document.getElementById('news-text').textContent = config.novedadesTexto;
+        document.getElementById('news-text').innerHTML = config.novedadesTexto; // document.getElementById('news-text').textContent = config.novedadesTexto;
     } else {
         document.getElementById('latest-news').style.display = 'none';
     }
