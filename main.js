@@ -1,7 +1,7 @@
 // Variables configurables
 const config = {
     // Estado actual (déjalo vacío si no quieres mostrar nada)
-    estado: "🐍 Empezando con python 🐍",
+    estado: "💻mañana stream casi 100% :)",
 
     // Imagen de perfil y banner
     profileImage: "img/cara.png",
