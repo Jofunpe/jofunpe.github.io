@@ -252,11 +252,21 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.35);
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
       z-index: 50;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 160ms ease, visibility 160ms ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     .modal {
@@ -268,6 +278,22 @@
       width: 100%;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
       border: 1px solid var(--border);
+      transform: scale(0.94);
+      opacity: 0;
+      transform-origin: center;
+    }
+
+    .modal-backdrop.active .modal {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .modal.is-opening {
+      animation: modalZoomIn 170ms ease forwards;
+    }
+
+    .modal.is-closing {
+      animation: modalZoomOut 150ms ease forwards;
     }
 
     .modal h3 {
@@ -331,6 +357,28 @@
       padding: 8px 10px;
       border-radius: 10px;
       font-size: 14px;
+    }
+
+    @keyframes modalZoomIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.94);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes modalZoomOut {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.9);
+      }
     }
 
     @media (max-width: 900px) {
@@ -524,6 +572,7 @@
     const timezoneSelector = document.getElementById('timezoneSelector');
     const timezoneSearch = document.getElementById('timezoneSearch');
     const modalBackdrop = document.getElementById('modalBackdrop');
+    const modal = modalBackdrop.querySelector('.modal');
     const modalTitle = document.getElementById('modalTitle');
     const modalContent = document.getElementById('modalContent');
     const modalLink = document.getElementById('modalLink');
@@ -670,6 +719,7 @@
     }
 
     function openModal(event) {
+      modal.classList.remove('is-closing');
       modalTitle.textContent = event.name;
       modalContent.textContent = event.content || '';
       if (event.link) {
@@ -678,11 +728,26 @@
       } else {
         modalLink.style.display = 'none';
       }
-      modalBackdrop.style.display = 'flex';
+      modalBackdrop.classList.add('active');
+      modal.classList.remove('is-opening');
+      void modal.offsetWidth; // Reiniciar animación
+      modal.classList.add('is-opening');
+      modal.addEventListener('animationend', () => modal.classList.remove('is-opening'), { once: true });
     }
 
     function closeModal() {
-      modalBackdrop.style.display = 'none';
+      if (!modalBackdrop.classList.contains('active')) return;
+      modal.classList.remove('is-opening');
+      modal.classList.add('is-closing');
+
+      const handleCloseAnimation = (e) => {
+        if (e.target !== modal) return;
+        modalBackdrop.classList.remove('active');
+        modal.classList.remove('is-closing');
+        modal.removeEventListener('animationend', handleCloseAnimation);
+      };
+
+      modal.addEventListener('animationend', handleCloseAnimation, { once: true });
     }
 
     function initSelectors() {
