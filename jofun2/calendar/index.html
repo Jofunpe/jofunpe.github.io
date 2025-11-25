@@ -202,7 +202,7 @@
       background: var(--accent);
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       cursor: pointer;
-      overflow: hidden;
+      overflow: visible;
       border: 1px solid rgba(0, 0, 0, 0.05);
       display: flex;
       align-items: center;
@@ -676,7 +676,7 @@
           const slot = document.createElement('div');
           slot.className = 'slot';
           // Usamos data-title para no depender del tooltip nativo del navegador.
-          slot.dataset.title = 'nada :(';
+          slot.dataset.title = 'nada :)';
           calendarEl.appendChild(slot);
         });
       });
