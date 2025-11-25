@@ -1,1 +1,721 @@
-<h1>Hello word</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario Jofun2</title>
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --text: #1d2433;
+      --muted: #5b6476;
+      --accent: #4065f5;
+      --border: #d9deea;
+      
+      /* Configuración de tooltips */
+      --tooltip-delay: 0s;
+      --tooltip-bg: rgba(15, 23, 42, 0.95);
+      --tooltip-text: #ffffff;
+      --tooltip-padding: 6px 10px;
+      --tooltip-font-size: 12px;
+      --tooltip-border-radius: 6px;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .page {
+      width: min(1200px, 96vw);
+      margin: 32px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .top-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      flex: 1 1 220px;
+    }
+
+    .title a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .title a:hover {
+      text-decoration: underline;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .control {
+      display: flex;
+      flex-direction: column;
+      font-size: 12px;
+      color: var(--muted);
+      gap: 6px;
+    }
+
+    select {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      min-width: 180px;
+    }
+
+    .calendar-wrapper {
+      background: var(--surface);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.05);
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: 70px repeat(7, 1fr);
+      border-collapse: collapse;
+    }
+
+    .day-header {
+      text-align: center;
+      font-weight: 700;
+      padding: 0;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .time-cell {
+      border-bottom: 1px solid var(--border);
+      height: 56px;
+      padding: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .time-row {
+      display: contents;
+    }
+
+    .slot {
+      position: relative;
+      min-height: 56px;
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      padding: 4px;
+      cursor: default;
+    }
+
+    .slot[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: var(--tooltip-bg);
+      color: var(--tooltip-text);
+      padding: var(--tooltip-padding);
+      font-size: var(--tooltip-font-size);
+      border-radius: var(--tooltip-border-radius);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      animation: tooltipZoom var(--tooltip-delay) ease-out;
+    }
+
+    .slot[title]:hover::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      border: 5px solid transparent;
+      border-top-color: var(--tooltip-bg);
+      pointer-events: none;
+      z-index: 1000;
+      animation: tooltipZoom var(--tooltip-delay) ease-out;
+    }
+
+    @keyframes tooltipZoom {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-4px) scale(0.92);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px) scale(1);
+      }
+    }
+
+    .event {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: #0f172a;
+      background: var(--accent);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .event[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: var(--tooltip-bg);
+      color: var(--tooltip-text);
+      padding: var(--tooltip-padding);
+      font-size: var(--tooltip-font-size);
+      border-radius: var(--tooltip-border-radius);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 1001;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      animation: tooltipZoom var(--tooltip-delay) ease-out;
+    }
+
+    .event[title]:hover::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      border: 5px solid transparent;
+      border-top-color: var(--tooltip-bg);
+      pointer-events: none;
+      z-index: 1001;
+      animation: tooltipZoom var(--tooltip-delay) ease-out;
+    }
+
+    .event h4 {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+
+    .event.no-content {
+      cursor: pointer;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
+    }
+
+    .modal {
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 20px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+    }
+
+    .modal h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .modal p {
+      margin-top: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .btn.secondary {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .legend {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .timezone-control {
+      min-width: 240px;
+    }
+
+    .timezone-select {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .timezone-select input {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .calendar {
+        grid-template-columns: 60px repeat(7, minmax(100px, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .controls {
+        width: 100%;
+      }
+
+      select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-bar">
+      <div class="title">Calendario del canal <a href="https://youtube.com/@jofun2" target="_blank" rel="noopener noreferrer">Jofun2</a></div>
+      <div class="controls">
+        <label class="control">
+          Tema visual
+          <select id="themeSelector" aria-label="Selector de tema">
+            <option value="claro">Claro</option>
+            <option value="oscuro">Oscuro</option>
+            <option value="verde">Verde</option>
+            <option value="rojo">Rojo</option>
+          </select>
+        </label>
+        <label class="control timezone-control">
+          Tu zona horaria
+          <div class="timezone-select">
+            <input id="timezoneSearch" type="search" placeholder="Buscar país o zona" aria-label="Buscar zona horaria" />
+            <select id="timezoneSelector" aria-label="Selector de zona horaria" size="8"></select>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="calendar-wrapper">
+      <div class="calendar" id="calendar"></div>
+      <div class="legend">Los eventos se ajustan a tu zona horaria seleccionada.</div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="modalTitle"></h3>
+      <p id="modalContent"></p>
+      <div class="modal-actions">
+        <button class="btn secondary" id="closeModal">Cerrar</button>
+        <a class="btn primary" id="modalLink" href="#" target="_blank" rel="noopener noreferrer">Ir al enlace</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="timezone.js"></script>
+  <script>
+    const events = [
+      {
+        day: 'domingo',
+        time: '20:00',
+        name: 'Test',
+        tooltip: 'w', // Si está vacío o no existe, usa 'name'
+        color: '#f97316',
+        content: 'Evento de prueba para el canal Jofun2.',
+        link: 'https://youtube.com/@jofun2',
+        timeZone: 'Europe/Madrid'
+      }
+    ];
+
+    const zoneData = Array.isArray(window.timeZoneEntries) ? window.timeZoneEntries : [];
+    const regionNames = typeof Intl.DisplayNames === 'function' ? new Intl.DisplayNames(['es'], { type: 'region' }) : null;
+
+    const themes = {
+      claro: { '--bg': '#f4f6fb', '--surface': '#ffffff', '--text': '#1d2433', '--muted': '#5b6476', '--accent': '#4065f5', '--border': '#d9deea' },
+      oscuro: { '--bg': '#0f172a', '--surface': '#111827', '--text': '#e5e7eb', '--muted': '#9ca3af', '--accent': '#22d3ee', '--border': '#1f2937' },
+      verde: { '--bg': '#061512', '--surface': '#0b1f1a', '--text': '#d9f2e4', '--muted': '#7aa08b', '--accent': '#34d399', '--border': '#143026' },
+      rojo: { '--bg': '#1a0a0a', '--surface': '#260f11', '--text': '#fde2e2', '--muted': '#d07c7c', '--accent': '#f87171', '--border': '#3a1619' }
+    };
+
+    const groupedTimezones = buildGroupedTimezones();
+
+    function getCountryName(code) {
+      return (regionNames && regionNames.of(code)) || code;
+    }
+
+    function formatZoneVariant(zone) {
+      const parts = zone.split('/').slice(1).filter(Boolean);
+      return parts.join(' / ').replace(/_/g, ' ') || zone;
+    }
+
+    function buildGroupedTimezones() {
+      const grouped = new Map();
+      zoneData.forEach(({ countryCode, zone }) => {
+        if (!countryCode || !zone) return;
+        countryCode.split(',').forEach((code) => {
+          const trimmed = code.trim();
+          if (!trimmed) return;
+          if (!grouped.has(trimmed)) grouped.set(trimmed, new Set());
+          grouped.get(trimmed).add(zone);
+        });
+      });
+
+      return Array.from(grouped.entries())
+        .map(([code, zones]) => ({ code, name: getCountryName(code), zones: Array.from(zones) }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+    }
+
+    function normalizeText(value) {
+      return value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .replace(/[^\p{Letter}\p{Number}\s()./-]/gu, '');
+    }
+
+    function rebuildTimezoneOptions(selectedValue, searchTerm = '') {
+      const rawTerm = searchTerm.trim();
+      const term = rawTerm.toLowerCase();
+      const normalizedTerm = normalizeText(rawTerm);
+      const options = [];
+      const isSearching = term.length > 0;
+
+      groupedTimezones.forEach(({ name, zones }) => {
+        if (zones.length === 1) {
+          const label = name;
+          const labelNormalized = normalizeText(label);
+          if (!isSearching || label.toLowerCase().includes(term) || labelNormalized.includes(normalizedTerm)) {
+            options.push({ value: zones[0], label });
+          }
+        } else {
+          zones.forEach((zone) => {
+            const variant = formatZoneVariant(zone);
+            const label = `${name} (${variant})`;
+            const labelNormalized = normalizeText(label);
+            if (!isSearching || label.toLowerCase().includes(term) || labelNormalized.includes(normalizedTerm)) {
+              options.push({ value: zone, label });
+            }
+          });
+        }
+      });
+
+      options.sort((a, b) => a.label.localeCompare(b.label, 'es'));
+
+      timezoneSelector.innerHTML = '';
+      options.forEach(({ value, label }) => {
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = label;
+        timezoneSelector.appendChild(opt);
+      });
+
+      if (selectedValue && options.some(opt => opt.value === selectedValue)) {
+        timezoneSelector.value = selectedValue;
+      } else if (options.length > 0) {
+        timezoneSelector.value = options[0].value;
+      }
+
+      return options;
+    }
+
+    const days = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+    const hours = Array.from({ length: 24 }, (_, i) => {
+      const label = new Date(Date.UTC(2020, 0, 1, i)).toLocaleString('es-ES', { hour: 'numeric', hour12: true, timeZone: 'UTC' });
+      return { value: i, label };
+    });
+
+    const calendarEl = document.getElementById('calendar');
+    const themeSelector = document.getElementById('themeSelector');
+    const timezoneSelector = document.getElementById('timezoneSelector');
+    const timezoneSearch = document.getElementById('timezoneSearch');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalContent = document.getElementById('modalContent');
+    const modalLink = document.getElementById('modalLink');
+    const closeModalBtn = document.getElementById('closeModal');
+
+    function applyTheme(themeKey) {
+      const theme = themes[themeKey] || themes.claro;
+      Object.entries(theme).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
+      localStorage.setItem('calendar-theme', themeKey);
+    }
+
+    function getTimeZoneOffset(date, timeZone) {
+      const dtf = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      });
+      const parts = dtf.formatToParts(date).reduce((acc, { type, value }) => {
+        acc[type] = value;
+        return acc;
+      }, {});
+      const formattedDate = Date.UTC(
+        Number(parts.year),
+        Number(parts.month) - 1,
+        Number(parts.day),
+        Number(parts.hour),
+        Number(parts.minute),
+        Number(parts.second)
+      );
+      return (formattedDate - date.getTime()) / 60000;
+    }
+
+    function toTargetTime(event, targetTimeZone) {
+      const dayIndex = days.indexOf(event.day.toLowerCase());
+      const [hour, minute] = event.time.split(':').map(Number);
+      
+      // Si ambas zonas son iguales, no hay conversión
+      if (event.timeZone === targetTimeZone || !event.timeZone) {
+        const date = new Date();
+        date.setHours(hour, minute, 0, 0);
+        date.setDate(date.getDate() - date.getDay() + 1 + dayIndex); // Lunes = 1
+        return { date, utcTime: date.getTime() };
+      }
+      
+      // Si son diferentes, hacer la conversión completa
+      const reference = getMonday(new Date());
+      const baseDate = new Date(Date.UTC(
+        reference.getUTCFullYear(), 
+        reference.getUTCMonth(), 
+        reference.getUTCDate() + dayIndex, 
+        0, 0, 0
+      ));
+      
+      // Añadir la hora en la zona del evento
+      baseDate.setUTCHours(hour, minute);
+      const eventOffset = getTimeZoneOffset(baseDate, event.timeZone);
+      const utcTime = baseDate.getTime() - eventOffset * 60000;
+      const targetOffset = getTimeZoneOffset(new Date(utcTime), targetTimeZone);
+      const localTime = new Date(utcTime + targetOffset * 60000);
+      
+      return { date: localTime, utcTime };
+    }
+
+    function getMonday(date) {
+      const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+      const day = d.getUTCDay();
+      const diff = (day + 6) % 7;
+      d.setUTCDate(d.getUTCDate() - diff);
+      return d;
+    }
+
+    function renderHeaders() {
+      calendarEl.innerHTML = '';
+      const emptyCorner = document.createElement('div');
+      emptyCorner.className = 'day-header';
+      calendarEl.appendChild(emptyCorner);
+      days.forEach((day) => {
+        const header = document.createElement('div');
+        header.className = 'day-header';
+        header.textContent = day.charAt(0).toUpperCase() + day.slice(1);
+        calendarEl.appendChild(header);
+      });
+    }
+
+    function renderGrid(targetTimeZone) {
+      renderHeaders();
+      hours.forEach((hourObj) => {
+        const row = document.createElement('div');
+        row.className = 'time-row';
+
+        const timeLabel = document.createElement('div');
+        timeLabel.className = 'time-cell';
+        timeLabel.textContent = hourObj.label;
+        calendarEl.appendChild(timeLabel);
+
+        days.forEach(() => {
+          const slot = document.createElement('div');
+          slot.className = 'slot';
+          slot.title = 'nada :(';
+          calendarEl.appendChild(slot);
+        });
+      });
+
+      events.forEach((event) => placeEvent(event, targetTimeZone));
+    }
+
+    function placeEvent(event, targetTimeZone) {
+      const { date } = toTargetTime(event, targetTimeZone);
+      const targetDayIndex = (date.getDay() + 6) % 7;
+      const hour = date.getHours();
+      const minutes = date.getMinutes();
+
+      const columnOffset = 1 + targetDayIndex;
+      const rowOffset = 1 + hour;
+      const cellIndex = rowOffset * 8 + columnOffset;
+      const slot = calendarEl.children[cellIndex];
+      if (!slot || !slot.classList.contains('slot')) return;
+
+      const eventEl = document.createElement('div');
+      eventEl.className = 'event';
+      eventEl.style.background = event.color || 'var(--accent)';
+      eventEl.style.top = `${(minutes / 60) * 56 + 2}px`;
+      eventEl.style.height = `${Math.min(44, 56 - (minutes / 60) * 56 - 4)}px`;
+      eventEl.title = event.name;
+
+      const title = document.createElement('h4');
+      title.textContent = event.name;
+      eventEl.appendChild(title);
+
+      const hasContent = Boolean(event.content);
+      const hasLink = Boolean(event.link);
+
+      if (hasContent) {
+        eventEl.addEventListener('click', () => openModal(event));
+      } else if (hasLink) {
+        eventEl.addEventListener('click', () => window.open(event.link, '_blank'));
+      } else {
+        eventEl.classList.add('no-content');
+      }
+
+      slot.appendChild(eventEl);
+      slot.title = ''; // Remover el "nada :(" si hay evento
+    }
+
+    function openModal(event) {
+      modalTitle.textContent = event.name;
+      modalContent.textContent = event.content || '';
+      if (event.link) {
+        modalLink.href = event.link;
+        modalLink.style.display = 'inline-flex';
+      } else {
+        modalLink.style.display = 'none';
+      }
+      modalBackdrop.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = 'none';
+    }
+
+    function initSelectors() {
+      const savedTheme = localStorage.getItem('calendar-theme') || 'claro';
+      const savedTz = localStorage.getItem('calendar-timezone') || 'Europe/Madrid';
+      themeSelector.value = savedTheme;
+      applyTheme(savedTheme);
+
+      const options = rebuildTimezoneOptions(savedTz, '');
+      const validTz = options.find(opt => opt.value === savedTz) ? savedTz : 'Europe/Madrid';
+      timezoneSelector.value = validTz;
+      localStorage.setItem('calendar-timezone', validTz);
+      renderGrid(validTz);
+
+      themeSelector.addEventListener('change', (e) => {
+        applyTheme(e.target.value);
+      });
+
+      timezoneSelector.addEventListener('change', (e) => {
+        const value = e.target.value;
+        localStorage.setItem('calendar-timezone', value);
+        renderGrid(value);
+      });
+
+      timezoneSearch.addEventListener('input', (e) => {
+        const currentValue = timezoneSelector.value;
+        const filtered = rebuildTimezoneOptions(currentValue, e.target.value);
+        
+        if (filtered.find(opt => opt.value === currentValue)) {
+          timezoneSelector.value = currentValue;
+        } else if (filtered.length > 0) {
+          const newValue = filtered[0].value;
+          timezoneSelector.value = newValue;
+          localStorage.setItem('calendar-timezone', newValue);
+          renderGrid(newValue);
+        }
+      });
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    initSelectors();
+  </script>
+</body>
+</html>
