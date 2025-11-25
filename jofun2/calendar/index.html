@@ -146,8 +146,12 @@
       cursor: default;
     }
 
-    .slot[title]:hover::after {
-      content: attr(title);
+    /*
+      Tooltip personalizado basado en data-title para evitar que el navegador
+      muestre el hint nativo del atributo title.
+    */
+    .slot[data-title]:hover::after {
+      content: attr(data-title);
       position: absolute;
       bottom: 100%;
       left: 50%;
@@ -164,7 +168,7 @@
       animation: tooltipZoom var(--tooltip-delay) ease-out;
     }
 
-    .slot[title]:hover::before {
+    .slot[data-title]:hover::before {
       content: '';
       position: absolute;
       bottom: 100%;
@@ -206,8 +210,8 @@
       text-align: center;
     }
 
-    .event[title]:hover::after {
-      content: attr(title);
+    .event[data-title]:hover::after {
+      content: attr(data-title);
       position: absolute;
       bottom: 100%;
       left: 50%;
@@ -224,7 +228,7 @@
       animation: tooltipZoom var(--tooltip-delay) ease-out;
     }
 
-    .event[title]:hover::before {
+    .event[data-title]:hover::before {
       content: '';
       position: absolute;
       bottom: 100%;
@@ -518,16 +522,17 @@
 
     function rebuildTimezoneOptions(selectedValue, searchTerm = '') {
       const rawTerm = searchTerm.trim();
-      const term = rawTerm.toLowerCase();
+      const lowerTerm = rawTerm.toLowerCase();
       const normalizedTerm = normalizeText(rawTerm);
       const options = [];
-      const isSearching = term.length > 0;
+      const isSearching = lowerTerm.length > 0;
 
       groupedTimezones.forEach(({ name, zones }) => {
         if (zones.length === 1) {
           const label = name;
           const labelNormalized = normalizeText(label);
-          if (!isSearching || label.toLowerCase().includes(term) || labelNormalized.includes(normalizedTerm)) {
+          const labelLower = label.toLowerCase();
+          if (!isSearching || labelLower.includes(lowerTerm) || labelNormalized.includes(normalizedTerm)) {
             options.push({ value: zones[0], label });
           }
         } else {
@@ -535,7 +540,8 @@
             const variant = formatZoneVariant(zone);
             const label = `${name} (${variant})`;
             const labelNormalized = normalizeText(label);
-            if (!isSearching || label.toLowerCase().includes(term) || labelNormalized.includes(normalizedTerm)) {
+            const labelLower = label.toLowerCase();
+            if (!isSearching || labelLower.includes(lowerTerm) || labelNormalized.includes(normalizedTerm)) {
               options.push({ value: zone, label });
             }
           });
@@ -661,9 +667,6 @@
     function renderGrid(targetTimeZone) {
       renderHeaders();
       hours.forEach((hourObj) => {
-        const row = document.createElement('div');
-        row.className = 'time-row';
-
         const timeLabel = document.createElement('div');
         timeLabel.className = 'time-cell';
         timeLabel.textContent = hourObj.label;
@@ -672,7 +675,8 @@
         days.forEach(() => {
           const slot = document.createElement('div');
           slot.className = 'slot';
-          slot.title = 'nada :(';
+          // Usamos data-title para no depender del tooltip nativo del navegador.
+          slot.dataset.title = 'nada :(';
           calendarEl.appendChild(slot);
         });
       });
@@ -697,7 +701,10 @@
       eventEl.style.background = event.color || 'var(--accent)';
       eventEl.style.top = `${(minutes / 60) * 56 + 2}px`;
       eventEl.style.height = `${Math.min(44, 56 - (minutes / 60) * 56 - 4)}px`;
-      eventEl.title = event.name;
+      const tooltipText = (event.tooltip && event.tooltip.trim()) || event.name;
+      if (tooltipText) {
+        eventEl.dataset.title = tooltipText;
+      }
 
       const title = document.createElement('h4');
       title.textContent = event.name;
@@ -715,7 +722,7 @@
       }
 
       slot.appendChild(eventEl);
-      slot.title = ''; // Remover el "nada :(" si hay evento
+      slot.removeAttribute('data-title'); // Remover el "nada :(" si hay evento
     }
 
     function openModal(event) {
