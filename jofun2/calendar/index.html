@@ -455,7 +455,7 @@
         day: 'lunes',
         time: '01:00',
         name: 'Directo - Shadows of doubt',
-        tooltip: '', // Si está vacío o no existe, usa 'name'
+        tooltip: '',
         color: '#ED7B7B',
         content: 'Estaré en directo a las 01:00 am (hora española) ',
         link: '',
@@ -466,7 +466,7 @@
         day: 'viernes',
         time: '01:00',
         name: 'Directo - probando la última update de my summer car',
-        tooltip: '', // Si está vacío o no existe, usa 'name'
+        tooltip: '',
         color: '#f97316',
         content: 'Estaré en directo a las 01:00 am (hora española) ',
         link: '',
@@ -477,7 +477,7 @@
         day: 'miércoles',
         time: '01:00',
         name: 'Directo - Jugando por primera vez a PEAK!',
-        tooltip: 'Aprox jugaré a las 01:00 AM (hora española). Pero no es seguro', // Si está vacío o no existe, usa 'name'
+        tooltip: 'Aprox jugaré a las 01:00 AM (hora española). Pero no es seguro',
         color: '#DE8416',
         content: 'La verdad no se de que va peak, solos e que hay que escalar una montaña. Pero bueno, os espero en jofun2',
         link: 'https://www.youtube.com/watch?v=3815RxWeO7I',
@@ -601,57 +601,90 @@
       localStorage.setItem('calendar-theme', themeKey);
     }
 
-    function getTimeZoneOffset(date, timeZone) {
-      const dtf = new Intl.DateTimeFormat('en-US', {
-        timeZone,
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: false
-      });
-      const parts = dtf.formatToParts(date).reduce((acc, { type, value }) => {
-        acc[type] = value;
-        return acc;
-      }, {});
-      const formattedDate = Date.UTC(
-        Number(parts.year),
-        Number(parts.month) - 1,
-        Number(parts.day),
-        Number(parts.hour),
-        Number(parts.minute),
-        Number(parts.second)
-      );
-      return (formattedDate - date.getTime()) / 60000;
-    }
-
     function toTargetTime(event, targetTimeZone) {
       const dayIndex = days.indexOf(event.day.toLowerCase());
       const [hour, minute] = event.time.split(':').map(Number);
       
-      // Si ambas zonas son iguales, no hay conversión
       if (event.timeZone === targetTimeZone || !event.timeZone) {
         const date = new Date();
         date.setHours(hour, minute, 0, 0);
-        date.setDate(date.getDate() - date.getDay() + 1 + dayIndex); // Lunes = 1
+        date.setDate(date.getDate() - date.getDay() + 1 + dayIndex);
         return { date, utcTime: date.getTime() };
       }
       
-      // Si son diferentes, hacer la conversión completa
+      // Crear una fecha en la zona horaria del evento
       const reference = getMonday(new Date());
-      const baseDate = new Date(Date.UTC(
-        reference.getUTCFullYear(), 
-        reference.getUTCMonth(), 
-        reference.getUTCDate() + dayIndex, 
-        0, 0, 0
-      ));
+      const year = reference.getUTCFullYear();
+      const month = reference.getUTCMonth();
+      const day = reference.getUTCDate() + dayIndex;
       
-      // Añadir la hora en la zona del evento
-      baseDate.setUTCHours(hour, minute);
-      const eventOffset = getTimeZoneOffset(baseDate, event.timeZone);
-      const utcTime = baseDate.getTime() - eventOffset * 60000;
-      const targetOffset = getTimeZoneOffset(new Date(utcTime), targetTimeZone);
-      const localTime = new Date(utcTime + targetOffset * 60000);
+      // Crear string de fecha en formato ISO para la zona del evento
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
       
-      return { date: localTime, utcTime };
+      // Parsear como fecha en la zona del evento
+      const eventFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: event.timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      
+      // Crear fecha UTC base
+      const utcDate = new Date(Date.UTC(year, month, day, hour, minute, 0));
+      
+      // Obtener el offset del evento para esta fecha
+      const eventParts = eventFormatter.formatToParts(utcDate).reduce((acc, { type, value }) => {
+        acc[type] = value;
+        return acc;
+      }, {});
+      
+      const eventLocalMs = Date.UTC(
+        Number(eventParts.year),
+        Number(eventParts.month) - 1,
+        Number(eventParts.day),
+        Number(eventParts.hour),
+        Number(eventParts.minute),
+        Number(eventParts.second)
+      );
+      
+      // El offset es cuánto debemos RESTAR de la hora local para obtener UTC
+      const eventOffsetMs = eventLocalMs - utcDate.getTime();
+      
+      // La hora UTC real del evento
+      const realUtcMs = Date.UTC(year, month, day, hour, minute, 0) - eventOffsetMs;
+      
+      // Ahora convertir a la zona destino
+      const targetFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: targetTimeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        weekday: 'short'
+      });
+      
+      const targetParts = targetFormatter.formatToParts(new Date(realUtcMs)).reduce((acc, { type, value }) => {
+        acc[type] = value;
+        return acc;
+      }, {});
+      
+      const targetDate = new Date(
+        Number(targetParts.year),
+        Number(targetParts.month) - 1,
+        Number(targetParts.day),
+        Number(targetParts.hour),
+        Number(targetParts.minute),
+        Number(targetParts.second)
+      );
+      
+      return { date: targetDate, utcTime: realUtcMs };
     }
 
     function getMonday(date) {
@@ -686,7 +719,6 @@
         days.forEach(() => {
           const slot = document.createElement('div');
           slot.className = 'slot';
-          // Usamos data-title para no depender del tooltip nativo del navegador.
           slot.dataset.title = 'nada :(';
           calendarEl.appendChild(slot);
         });
@@ -733,7 +765,7 @@
       }
 
       slot.appendChild(eventEl);
-      slot.removeAttribute('data-title'); // Remover el "nada :(" si hay evento
+      slot.removeAttribute('data-title');
     }
 
     function openModal(event) {
@@ -748,7 +780,7 @@
       }
       modalBackdrop.classList.add('active');
       modal.classList.remove('is-opening');
-      void modal.offsetWidth; // Reiniciar animación
+      void modal.offsetWidth;
       modal.classList.add('is-opening');
       modal.addEventListener('animationend', () => modal.classList.remove('is-opening'), { once: true });
     }
