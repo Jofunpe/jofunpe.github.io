@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizaciones de My Summer Car</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración para usar la fuente Inter -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Fondo oscuro */
+        }
+        /* Estilo para el ícono de detalle */
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details > summary {
+            list-style: none;
+        }
+        /* Clase para rotar el ícono de flecha al abrir */
+        .details-icon {
+            transition: transform 0.2s ease-in-out;
+        }
+        [open] .details-icon {
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto bg-gray-800 shadow-2xl rounded-xl p-6 md:p-10 border-t-4 border-amber-500">
+        
+        <!-- Título y Párrafo Introductorio -->
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+            Actualizaciones de My Summer Car
+        </h1>
+        
+        <p class="text-gray-400 mb-8 leading-relaxed border-b border-gray-700 pb-6">
+            En este artículo repasamos punto por punto las dos últimas actualizaciones de My Summer Car (una menor de 21 de septiembre de 2025 y otra principal del 8 de septiembre de 2025). Se explica cada cambio de forma técnica pero sencilla, para que sepas qué esperar en el juego sin extendernos demasiado ni añadir relleno.
+        </p>
+
+        <!-- Contenedor del Acordeón -->
+        <div class="space-y-4">
+            
+            <!-- 1. Actualización Principal – 8 de septiembre de 2025 -->
+            <details class="bg-gray-700 rounded-lg shadow-lg overflow-hidden transition duration-300 ease-in-out hover:bg-gray-600/70" open>
+                <summary class="flex justify-between items-center p-4 cursor-pointer font-bold text-lg text-amber-300">
+                    <span>Actualización principal – 8 de septiembre de 2025</span>
+                    <svg class="w-5 h-5 details-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </summary>
+                
+                <div class="p-4 pt-0 bg-gray-800 text-gray-300 border-t border-gray-700">
+                    <ul class="list-disc pl-5 space-y-3">
+                        <li>
+                            <p><strong>Sonido al golpear a Suski:</strong> Se añadió un efecto de sonido que faltaba al golpear a Suski (un personaje femenino del juego). Anteriormente, si el jugador chocaba o empujaba a Suski, no se escuchaba ninguna reacción sonora. Con este parche, ahora se oye un sonido de impacto, aportando un toque más realista y de retroalimentación al interactuar físicamente con Suski en el juego.</p>
+                        </li>
+                        <li>
+                            <p><strong>Tormentas menos severas:</strong> Las tormentas eléctricas en el juego ahora son más moderadas en promedio. Esto quiere decir que, de media, las tormentas tendrán lluvia y truenos menos intensos de lo habitual. En la práctica, los jugadores notarán que las condiciones climáticas extremas son un poco más benévolas, facilitando la conducción y reduciendo la probabilidad de percances debidos a tormentas muy fuertes.</p>
+                        </li>
+                        <li>
+                            <p><strong>Teimo cierra la caja si orinas en la tienda:</strong> Si el jugador se orina dentro de la tienda de Teimo (el tendero), Teimo ahora cerrará la caja registradora. Es decir, si intentas hacer compras inmediatamente después de tan inapropiada acción, no podrás porque Teimo habrá cerrado la caja enfadado. Este cambio agrega una consecuencia lógica a ensuciar su establecimiento: tendrás que esperar a que Teimo termine de reprenderte o se reanude el servicio antes de poder comprar de nuevo.</p>
+                        </li>
+                        <li>
+                            <p><strong>Luces direccionales seguían parpadeando sin faros:</strong> Se corrigió un bug donde los intermitentes (direccionales) del coche seguían funcionando y parpadeando aunque se hubieran quitado los guardabarros y las luces traseras del vehículo. Ahora, si desmontas los faros traseros o las aletas que los sostienen, las luces de giro ya no permanecerán activas en el aire, eliminando ese efecto visual extraño.</p>
+                        </li>
+                        <li>
+                            <p><strong>La abuela ya no vuelve a la iglesia tras llevarla a casa:</strong> Solucionado un problema con la abuela NPC (a quien puedes llevar en coche desde la iglesia hasta su casa). Antes, después de completar la misión y dejar a la abuela en su hogar, ella regresaba caminando a la iglesia por un fallo. Tras la corrección, la abuela permanece en su casa una vez la has transportado, comportándose de manera consistente con la misión completada.</p>
+                        </li>
+                        <li>
+                            <p><strong>Lápidas adicionales en el bosque:</strong> Implementado un cambio en el cementerio: si el cementerio ya está lleno de lápidas (por ejemplo, tras muchas muertes en modo permadeath), las lápidas subsecuentes aparecerán en el bosque cercano. En resumen, una vez alcanzada la capacidad máxima del camposanto, cualquier nueva lápida conmemorativa de fallecimiento se generará en un claro del bosque adyacente en lugar de superponerse en el cementerio.</p>
+                        </li>
+                        <li>
+                            <p><strong>Precios de tienda suben sin publicidad:</strong> Ahora algunos precios en la tienda de Teimo irán aumentando gradualmente hasta que el jugador haga la misión de repartir los folletos publicitarios de la tienda. Esto significa que, si ignoras esa tarea, notarás que ciertos productos se encarecen con el tiempo. Una vez que entregues suficientes anuncios de la tienda, los precios volverán a la normalidad, incentivando al jugador a cumplir con ese encargo publicitario para beneficiar su economía en el juego.</p>
+                        </li>
+                        <li>
+                            <p><strong>Pegatina de impuesto obligatoria:</strong> Se introdujo el Sticker de impuesto de circulación en el parabrisas como requisito legal para los coches de pasajeros. Ahora tu vehículo (el Satsuma y otros coches privados) debe llevar la pegatina de impuesto en la esquina del parabrisas, y si no la tienes visible podrías recibir una multa al pasar por un control policial. El sticker puede adquirirse en la oficina de inspección (Lindell) por 500 mk y se coloca automáticamente en tu coche al comprarlo. En resumen, conducir sin este sello fiscal ya no es una opción si quieres evitar sanciones.</p>
+                        </li>
+                        <li>
+                            <p><strong>Barril de basura y farol bajo agua:</strong> Arreglado el detalle de que el barril de basura y el farol seguían ardiendo bajo el agua. Tras el parche, si arrojas el barril de basura encendido o una linterna de keroseno encendida a un lago o río, el fuego se apagará correctamente al sumergirse (como cabría esperar en la vida real), en lugar de continuar ardiendo mágicamente bajo el agua.</p>
+                        </li>
+                        <li>
+                            <p><strong>Subwoofers seguían sonando tras quitarlos:</strong> Se solucionó un error por el cual los subwoofers del coche (los altavoces de bajos) seguían emitiendo sonido incluso después de desmontarlos. Ahora, si retiras los subwoofers del vehículo, dejarán de funcionar inmediatamente como es lógico, en lugar de seguir retumbando como si aún estuvieran conectados.</p>
+                        </li>
+                        <li>
+                            <p><strong>Descarga al instalar alternador/arranque sin desconectar batería:</strong> Ahora existe el riesgo de electrocutarse al instalar el alternador o el motor de arranque si no desconectas la batería primero. Este cambio añade realismo y precaución mecánica: antes de manipular esas piezas eléctricas, debes desconectar el borne de la batería, ya que de lo contrario recibirás una descarga eléctrica (un susto que ahora el juego simula). En otras palabras, trabajar en el alternador/arranque con la batería conectada puede lastimar al jugador, así que hay que tomar la medida de seguridad adecuada.</p>
+                        </li>
+                        <li>
+                            <p><strong>Peleador del baile ahora saca un cuchillo si pierde su gorra:</strong> En el pabellón de baile (dance hall), el pendenciero borracho que suele pelear se volverá más peligroso si durante la trifulca pierde su gorra. Concretamente, ahora el personaje sacará un cuchillo si su gorro cae al suelo. Esto significa que provocar o golpear a este luchador de bar hasta el punto de hacerle volar la gorra hará escalar la pelea, ya que intentará atacarte armado con un cuchillo en adelante.</p>
+                        </li>
+                        <li>
+                            <p><strong>Bloque del motor ya no reaparece en la grúa tras romperse:</strong> Corregido un bug al cargar partida relacionado con el bloque del motor. Si anteriormente habías arrancado (separado) el bloque motor del polipasto o grúa de taller de forma violenta o por accidente, al cargar el juego el motor volvía a aparecer mágicamente colgado de la grúa. Tras la actualización, el bloque mantendrá su estado (por ejemplo en el suelo) al recargar la partida, en lugar de resetearse a estar montado de nuevo en la grúa cuando no debería.</p>
+                        </li>
+                        <li>
+                            <p><strong>Velas funerarias en el lugar de accidente mortal:</strong> Ahora, si el jugador muere en un accidente fatal de coche, aparecerán velas funerarias en el sitio del siniestro. Este detalle actúa como un memorial en el escenario: cuando vuelvas a esa ubicación tras reanudar la partida (en modo permadeath u otro), verás unas velas encendidas donde ocurrió tu choque mortal, simbolizando el lugar de fallecimiento del protagonista.</p>
+                        </li>
+                        <li>
+                            <p><strong>Camión cervecero de IA ya no aparece atascado:</strong> Se arregló un fallo en el que el camión repartidor de cerveza de la IA (un vehículo NPC) a veces spawneaba mal y quedaba atascado en el mapa. Con la corrección, el camión de cerveza debería generarse en su posición correcta y no quedarse atrapado en obstáculos, asegurando que cumpla su recorrido normal por las carreteras del juego.</p>
+                        </li>
+                        <li>
+                            <p><strong>Coches de la autopista evitan vehículo parado:</strong> Mejora en la inteligencia artificial de los coches de tráfico en la autopista: ahora serán capaces de esquivar o rodear el vehículo del jugador cuando esté detenido en medio de la carretera. Antes, si te quedabas parado en la autopista, los coches NPC a veces seguían recto y chocaban contigo. Tras la actualización, los conductores controlados por la IA detectarán tu coche inmóvil y tratarán de cambiar de carril o frenar a tiempo para evitar una colisión, haciendo la conducción por autopista más realista y menos propensa a choques por alcance involuntarios.</p>
+                        </li>
+                    </ul>
+                </div>
+            </details>
+            
+            <!-- 2. Correcciones Menores – 21 de septiembre de 2025 -->
+            <details class="bg-gray-700 rounded-lg shadow-lg overflow-hidden transition duration-300 ease-in-out hover:bg-gray-600/70">
+                <summary class="flex justify-between items-center p-4 cursor-pointer font-bold text-lg text-amber-300">
+                    <span>Correcciones menores – 21 de septiembre de 2025</span>
+                    <svg class="w-5 h-5 details-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </summary>
+                
+                <div class="p-4 pt-0 bg-gray-800 text-gray-300 border-t border-gray-700">
+                    <ul class="list-disc pl-5 space-y-3">
+                        <li>
+                            <p><strong>Alternador y motor de arranque (hotwiring):</strong> Se corrigieron problemas relacionados con puentear el alternador y el motor de arranque. Esto significa que ya no deberían ocurrir fallos al intentar encender el motor sin la llave o manipulando directamente el cableado de estas piezas, algo que antes podía causar comportamientos anómalos en el vehículo.</p>
+                        </li>
+                        <li>
+                            <p><strong>Puntos de ruta del barco de IA:</strong> Se solucionó un error en la ruta del barco controlado por la IA (el barquero NPC). Ahora el barco seguirá correctamente sus waypoints o puntos de navegación predefinidos, evitando atascos o trayectos erráticos que podían ocurrir antes debido a la ruta mal configurada.</p>
+                        </li>
+                        <li>
+                            <p><strong>Trampa de peces (“katiska”) atascada:</strong> Arreglado un bug en la katiska (trampa para peces) cuya lógica podía quedarse bloqueada al intentar atrapar un pez inexistente. En otras palabras, si no había peces disponibles para atrapar, la trampa ya no se quedará “pensando” indefinidamente; el sistema reinicia correctamente el ciclo de captura en lugar de estancarse.</p>
+                        </li>
+                    </ul>
+                </div>
+            </details>
+
+        </div>
+        
+        <!-- Pie de página con enlaces -->
+        <p class="mt-8 text-center text-gray-500 text-xs">
+            Artículo para reaccionarlo en un directo en 
+            <a href="https://www.youtube.com/@jofun2" target="_blank" class="text-amber-500 font-bold hover:text-amber-300 hover:underline transition duration-150">jofun2</a> 
+            de My Summer Car. 
+            <a href="https://www.youtube.com/watch?v=_0iFBnySwfI" target="_blank" class="text-red-500 font-bold hover:text-red-300 hover:underline transition duration-150">Dale click aquí para ver el directo</a>.
+        </p>
+
+    </div>
+
+</body>
+</html>
