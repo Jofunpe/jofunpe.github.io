@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>En obras</title>
+  <title>Jofunpe (lost media)</title>
   <style>
     :root{color-scheme:dark;}
     body{
@@ -19,7 +19,13 @@
       background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18);
       border-radius:18px; backdrop-filter:blur(10px);
       box-shadow:0 20px 60px rgba(0,0,0,.35);
+      transform:translateZ(0);
+      will-change:transform;
+      transition:transform 140ms ease, box-shadow 140ms ease;
     }
+    .card:hover,
+    .card:focus-visible{transform:scale(1.035); box-shadow:0 28px 80px rgba(0,0,0,.45);}
+    .card:active{transform:scale(1.045);}
     h1{margin:0 0 10px; font-size:clamp(30px,5vw,44px); letter-spacing:.2px;}
     p{margin:0; opacity:.9; line-height:1.45}
     .small{margin-top:14px; font-size:.95rem; opacity:.75}
@@ -27,10 +33,10 @@
   </style>
 </head>
 <body>
-  <main class="card" role="status" aria-live="polite">
+  <main class="card" role="status" aria-live="polite" tabindex="0">
     <h1>🚧 En obras</h1>
-    <p>Ya mismo tendréis esta web disponible :)</p>
-    <p class="small"><span class="dot"></span>Si necesitas algo: <b>info@jofunpe.com</b></p>
+    <p>Estamos montando la web. Vuelve pronto.</p>
+    <p class="small"><span class="dot"></span>Si necesitas algo: <b>contacto@tudominio.com</b></p>
   </main>
 </body>
 </html>
