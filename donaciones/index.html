@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Donaciones :D</title>
+  <style>
+    :root{color-scheme:dark;}
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(120deg,#0ea5e9,#a855f7,#22c55e,#f97316);
+      background-size:400% 400%;
+      animation:grad 14s ease-in-out infinite;
+    }
+    @keyframes grad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .card{
+      text-align:center; padding:28px 26px; width:min(520px,92vw);
+      background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18);
+      border-radius:18px; backdrop-filter:blur(10px);
+      box-shadow:0 20px 60px rgba(0,0,0,.35);
+      transform:translateZ(0);
+      will-change:transform;
+      transition:transform 140ms ease, box-shadow 140ms ease;
+    }
+    .card:hover,
+    .card:focus-visible{transform:scale(1.035); box-shadow:0 28px 80px rgba(0,0,0,.45);}
+    .card:active{transform:scale(1.045);}
+    h1{margin:0 0 10px; font-size:clamp(30px,5vw,44px); letter-spacing:.2px;}
+    p{margin:0; opacity:.9; line-height:1.45}
+    .small{margin-top:14px; font-size:.95rem; opacity:.75}
+    .dot{display:inline-block; width:.55em; aspect-ratio:1; border-radius:99px; background:currentColor; margin:.15em .35em; opacity:.9}
+  </style>
+</head>
+<body>
+  <main class="card" role="status" aria-live="polite" tabindex="0">
+    <h1>🚧 En obras</h1>
+    <p>La web estará dentro de poquito :D</p>
+    <p class="small"><span class="dot"></span>Si necesitas algo: <b>info@jofunpe.com</b></p>
+  </main>
+</body>
+</html>
