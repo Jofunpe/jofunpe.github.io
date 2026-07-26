@@ -149,6 +149,35 @@
   /* ---------- Main ---------- */
   .main{ display:flex; flex-direction:column; gap:22px; min-width:0; }
 
+  /* live banner (ahora en directo) */
+  .live-banner{ display:none; }
+  .live-banner.show{ display:block; }
+  .live-now-card{
+    position:relative; overflow:hidden; border-radius:var(--radius-lg); border:1px solid rgba(255,77,94,0.45);
+    padding:18px 22px; display:flex; align-items:center; gap:16px; cursor:pointer;
+    transition:transform 180ms ease, box-shadow 180ms ease;
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 26px),
+      linear-gradient(120deg, rgba(255,77,94,0.14), var(--surface));
+    box-shadow:0 0 0 0 rgba(255,77,94,0.4);
+    animation:liveGlow 2.4s infinite;
+  }
+  .live-now-card:hover{ transform:translateY(-3px) scale(1.01); }
+  @keyframes liveGlow{
+    0%{ box-shadow:0 0 0 0 rgba(255,77,94,0.35); }
+    70%{ box-shadow:0 0 0 10px rgba(255,77,94,0); }
+    100%{ box-shadow:0 0 0 0 rgba(255,77,94,0); }
+  }
+  .live-now-tag{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11.5px;
+    letter-spacing:.16em; text-transform:uppercase; padding:7px 14px; border-radius:999px; flex:none;
+    color:var(--live); background:var(--live-soft); border:1px solid rgba(255,77,94,0.4);
+  }
+  .live-now-tag .dot{ width:7px; height:7px; border-radius:50%; background:var(--live); animation:pulse 1.6s infinite; }
+  .live-now-info{ min-width:0; }
+  .live-now-info .lbl{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; margin-bottom:3px; }
+  .live-now-info h3{ margin:0; font-family:var(--font-display); font-weight:600; font-size:clamp(17px,2vw,21px); line-height:1.2; }
+
   .next-row{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
 
   .next-card{
@@ -315,6 +344,8 @@
 
     <!-- MAIN -->
     <main class="main">
+      <div class="live-banner" id="liveBanner"></div>
+
       <div class="next-row" id="nextRow"></div>
 
       <div>
@@ -349,7 +380,12 @@
                si no se indica "repeat").
        startDate: 'YYYY-MM-DD' → fecha de la PRIMERA aparición de este evento. Es obligatoria si
                "repeat" es un número, porque a partir de ahí se cuentan las repeticiones semana a semana.
-               Si "repeat" es 'infinite' (o no se indica), startDate es opcional. */
+               Si "repeat" es 'infinite' (o no se indica), startDate es opcional.
+       endTime: 'HH:MM' (OPCIONAL) → hora a la que termina el directo/evento, en la misma zona horaria
+               indicada en "timeZone". Si no se indica, se usa la duración por defecto
+               (EVENT_DURATION_MIN, 120 minutos) para saber cuándo se considera terminado.
+               Si la hora de fin es menor que la de inicio, se entiende que termina al día siguiente
+               (por ejemplo empieza 23:30 y termina 01:00). */
     const events = [
       {
         day: 'lunes', time: '02:00', name: 'Shadows of doubt #6', type: 'directo',
@@ -357,6 +393,7 @@
         content: 'Episodio 6 de la serie de shadows of doubt',
         link: 'https://www.youtube.com/watch?v=YKxvby1zjJc', timeZone: 'Europe/Madrid',
         repeat: '1',
+        endTime: '5:00',
         startDate: '2026-07-27'
       },
       {
@@ -365,6 +402,7 @@
         content: 'episodio 32 de la serie en directo de My winter car',
         link: '', timeZone: 'Europe/Madrid',
         repeat: '1',
+        endTime: '5:00',
         startDate: '2026-07-28'
       },
       {
@@ -373,6 +411,7 @@
         content: 'episodio 33 de la serie en directo de My winter car',
         link: '', timeZone: 'Europe/Madrid',
         repeat: '1',
+        endTime: '5:00',
         startDate: '2026-07-29'
       },
       {
@@ -381,6 +420,7 @@
         content: 'episodio 34 de la serie en directo de My winter car',
         link: '', timeZone: 'Europe/Madrid',
         repeat: '1',
+        endTime: '5:00',
         startDate: '2026-07-30'
       },
       {
@@ -389,6 +429,7 @@
         content: 'fortniteee',
         link: '', timeZone: 'Europe/Madrid',
         repeat: '1',
+        endTime: '5:00',
         startDate: '2026-07-31'
       },
       {
@@ -397,6 +438,7 @@
         content: 'el bosque en vr',
         link: '', timeZone: 'Europe/Madrid',
         repeat: '1',
+        endTime: '5:00',
         startDate: '2026-08-02'
       },
       {
@@ -406,14 +448,24 @@
         link: '', timeZone: 'Europe/Madrid',
         repeat: '1',
         startDate: '2026-08-02'
+      },
+      {
+        day: 'domingo', time: '18:00', name: 'testing event', type: 'evento',
+        tooltip: 'testing', color: '#09A6E3',
+        content: 'efrjmergh',
+        link: 'https://jofunpe.com', timeZone: 'Europe/Madrid',
+        repeat: '1',
+        endTime: '19:00',
+        startDate: '2026-07-26'
       }
-      /* Ejemplo de evento con repeticiones limitadas:
+      /* Ejemplo de evento con repeticiones limitadas y hora de fin:
       {
         day: 'sábado', time: '18:00', name: 'Especial de aniversario', type: 'evento',
         content: 'Transmisión especial por el aniversario del canal',
         link: 'https://www.youtube.com/watch?v=XXXXXXXXXXX', timeZone: 'Europe/Madrid',
         startDate: '2026-08-01', // primera vez que ocurre
-        repeat: 3                // ocurre 3 semanas seguidas desde el 2026-08-01 y luego desaparece
+        repeat: 3,               // ocurre 3 semanas seguidas desde el 2026-08-01 y luego desaparece
+        endTime: '20:00'         // opcional: hora a la que termina (misma timeZone)
       }
       */
     ];
@@ -456,6 +508,23 @@
       const [hour, minute] = event.time.split(':').map(Number);
       const target = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + dayIndex);
       return localWallToUtc(target.getFullYear(), target.getMonth(), target.getDate(), hour, minute, event.timeZone || 'UTC');
+    }
+
+    /* Calcula el instante (ms UTC) en el que termina un evento que ha empezado en "startMs".
+       Si el evento tiene "endTime" se usa esa hora (en su propia timeZone); si el resultado
+       queda antes o igual que el inicio, se entiende que termina al día siguiente.
+       Si no tiene "endTime", se usa la duración por defecto EVENT_DURATION_MIN. */
+    function getEventEndMs(event, startMs){
+      const tz = event.timeZone || 'UTC';
+      if (event.endTime){
+        const fmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' });
+        const parts = fmt.formatToParts(new Date(startMs)).reduce((acc,{type,value}) => { acc[type]=value; return acc; }, {});
+        const [eh, em] = event.endTime.split(':').map(Number);
+        let endMs = localWallToUtc(Number(parts.year), Number(parts.month) - 1, Number(parts.day), eh, em, tz);
+        if (endMs <= startMs) endMs += 24 * 3600000;
+        return endMs;
+      }
+      return startMs + EVENT_DURATION_MIN * 60000;
     }
 
     /* ---------- Repeticiones: número de ocurrencias limitado o infinito ---------- */
@@ -567,6 +636,27 @@
       return results.sort((a, b) => a.ms - b.ms);
     }
 
+    /* Busca si hay algún evento en curso justo ahora (fromMs). Comprueba la ocurrencia de esta
+       semana y la de la semana anterior para cada evento (por si empezó antes de medianoche del
+       lunes o dura más de lo habitual) y devuelve el primero cuyo rango [inicio, fin) contenga
+       "fromMs". Si no hay ninguno en directo ahora mismo, devuelve null. */
+    function getCurrentlyLiveEvent(fromMs = Date.now()){
+      const monday = mondayOf(new Date(fromMs));
+      const prevMonday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() - 7);
+      let found = null;
+      events.forEach((event) => {
+        [prevMonday, monday].forEach((wk) => {
+          if (!isEventActiveInWeek(event, wk)) return;
+          const startMs = eventUtcMsForWeek(event, wk);
+          const endMs = getEventEndMs(event, startMs);
+          if (fromMs >= startMs && fromMs < endMs) {
+            found = { event, startMs, endMs };
+          }
+        });
+      });
+      return found;
+    }
+
     /* ===================== Zonas horarias ===================== */
     const zoneData = Array.isArray(window.timeZoneEntries) ? window.timeZoneEntries : [];
     const regionNames = typeof Intl.DisplayNames === 'function' ? new Intl.DisplayNames(['es'], { type: 'region' }) : null;
@@ -669,6 +759,7 @@
     const modalContent = document.getElementById('modalContent');
     const modalLink = document.getElementById('modalLink');
     const closeModalBtn = document.getElementById('closeModal');
+    const liveBanner = document.getElementById('liveBanner');
     const nextRow = document.getElementById('nextRow');
     const feedEl = document.getElementById('feed');
     const feedReset = document.getElementById('feedReset');
@@ -679,6 +770,29 @@
     let monthCursor = new Date();
     monthCursor.setDate(1);
     let dayFilter = null; // {year, month, day} or null
+
+    /* ===================== "Ahora en directo" ===================== */
+    function renderLiveBanner(targetTimeZone){
+      const live = getCurrentlyLiveEvent();
+      liveBanner.innerHTML = '';
+      if (!live){
+        liveBanner.classList.remove('show');
+        return;
+      }
+      liveBanner.classList.add('show');
+      const type = eventType(live.event);
+      const card = document.createElement('div');
+      card.className = 'live-now-card';
+      card.innerHTML = `
+        <span class="live-now-tag"><span class="dot"></span>Ahora en directo</span>
+        <div class="live-now-info">
+          <div class="lbl">${TYPE_LABEL[type]} en curso</div>
+          <h3>${live.event.name}</h3>
+        </div>
+      `;
+      card.addEventListener('click', () => openModal(live.event, live.startMs, targetTimeZone));
+      liveBanner.appendChild(card);
+    }
 
     /* ===================== "Próximo X" ===================== */
     function renderNextRow(targetTimeZone){
@@ -728,7 +842,7 @@
       list.forEach(({ event, ms }) => {
         const { hour, minute, day, month } = fullPartsInTz(ms, targetTimeZone);
         const type = eventType(event);
-        const isLiveNow = Date.now() >= ms && Date.now() < ms + EVENT_DURATION_MIN * 60000;
+        const isLiveNow = Date.now() >= ms && Date.now() < getEventEndMs(event, ms);
         const card = document.createElement('div');
         card.className = 'feed-card';
         card.dataset.kind = type;
@@ -853,7 +967,13 @@
       if (ms){
         const { hour, minute, day, month } = fullPartsInTz(ms, targetTimeZone);
         const dayLabel = new Intl.DateTimeFormat('es-ES', { timeZone: targetTimeZone, weekday: 'long' }).format(new Date(ms));
-        modalDate.textContent = `${dayLabel.charAt(0).toUpperCase()}${dayLabel.slice(1)} ${day} de ${MESES[month]} · ${pad(hour)}:${pad(minute)}`;
+        let dateText = `${dayLabel.charAt(0).toUpperCase()}${dayLabel.slice(1)} ${day} de ${MESES[month]} · ${pad(hour)}:${pad(minute)}`;
+        const endMs = getEventEndMs(event, ms);
+        if (endMs){
+          const endParts = fullPartsInTz(endMs, targetTimeZone);
+          dateText += ` – ${pad(endParts.hour)}:${pad(endParts.minute)}`;
+        }
+        modalDate.textContent = dateText;
       } else {
         modalDate.textContent = '';
       }
@@ -886,6 +1006,7 @@
 
     /* ===================== Inicio ===================== */
     function refreshAll(targetTimeZone){
+      renderLiveBanner(targetTimeZone);
       renderNextRow(targetTimeZone);
       renderMiniCalendar(targetTimeZone);
       renderDestacados(targetTimeZone);
