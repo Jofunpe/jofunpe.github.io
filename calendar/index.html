@@ -17,6 +17,7 @@
     --accent:#ffb020; --accent-ink:#1a1200; --accent-soft:rgba(255,176,32,0.14);
     --live:#ff4d5e; --live-soft:rgba(255,77,94,0.15);
     --on:#35c9ff; --on-soft:rgba(53,201,255,0.14);
+    --evento:#22c55e; --evento-soft:rgba(34,197,94,0.14);
     --video:#a78bfa; --video-soft:rgba(167,139,250,0.16);
     --radius-lg:18px; --radius-md:12px; --radius-sm:9px;
     --font-display:'Oswald', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'JetBrains Mono', monospace;
@@ -106,7 +107,7 @@
     position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%;
     background:var(--accent);
   }
-  .cal-day.multi .pip{ box-shadow:-4px 0 0 var(--on), 4px 0 0 var(--video); width:3px; }
+  .cal-day.multi .pip{ box-shadow:-4px 0 0 var(--evento), 4px 0 0 var(--video); width:3px; }
 
   .cal-divider{ height:1px; background:var(--border-soft); margin:14px 0; }
 
@@ -149,31 +150,35 @@
   /* ---------- Main ---------- */
   .main{ display:flex; flex-direction:column; gap:22px; min-width:0; }
 
-  /* live banner (ahora en directo) */
+  /* live banner (ahora en directo / evento en curso) */
   .live-banner{ display:none; }
   .live-banner.show{ display:block; }
   .live-now-card{
-    position:relative; overflow:hidden; border-radius:var(--radius-lg); border:1px solid rgba(255,77,94,0.45);
+    position:relative; overflow:hidden; border-radius:var(--radius-lg);
     padding:18px 22px; display:flex; align-items:center; gap:16px; cursor:pointer;
     transition:transform 180ms ease, box-shadow 180ms ease;
+    border:1px solid var(--lnc-border, rgba(255,77,94,0.45));
     background:
       repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 26px),
-      linear-gradient(120deg, rgba(255,77,94,0.14), var(--surface));
-    box-shadow:0 0 0 0 rgba(255,77,94,0.4);
+      linear-gradient(120deg, var(--lnc-soft, rgba(255,77,94,0.14)), var(--surface));
     animation:liveGlow 2.4s infinite;
   }
+  /* Variantes de color según el tipo de evento en curso */
+  .live-now-card.directo{ --lnc-color:var(--live); --lnc-border:rgba(255,77,94,0.45); --lnc-soft:rgba(255,77,94,0.14); --lnc-shadow:rgba(255,77,94,0.35); }
+  .live-now-card.evento{ --lnc-color:var(--evento); --lnc-border:rgba(34,197,94,0.45); --lnc-soft:rgba(34,197,94,0.14); --lnc-shadow:rgba(34,197,94,0.35); }
+  .live-now-card.video{ --lnc-color:var(--video); --lnc-border:rgba(167,139,250,0.45); --lnc-soft:rgba(167,139,250,0.14); --lnc-shadow:rgba(167,139,250,0.35); }
   .live-now-card:hover{ transform:translateY(-3px) scale(1.01); }
   @keyframes liveGlow{
-    0%{ box-shadow:0 0 0 0 rgba(255,77,94,0.35); }
-    70%{ box-shadow:0 0 0 10px rgba(255,77,94,0); }
-    100%{ box-shadow:0 0 0 0 rgba(255,77,94,0); }
+    0%{ box-shadow:0 0 0 0 var(--lnc-shadow, rgba(255,77,94,0.35)); }
+    70%{ box-shadow:0 0 0 10px rgba(0,0,0,0); }
+    100%{ box-shadow:0 0 0 0 rgba(0,0,0,0); }
   }
   .live-now-tag{
     display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11.5px;
     letter-spacing:.16em; text-transform:uppercase; padding:7px 14px; border-radius:999px; flex:none;
-    color:var(--live); background:var(--live-soft); border:1px solid rgba(255,77,94,0.4);
+    color:var(--lnc-color, var(--live)); background:var(--lnc-soft, var(--live-soft)); border:1px solid var(--lnc-border, rgba(255,77,94,0.4));
   }
-  .live-now-tag .dot{ width:7px; height:7px; border-radius:50%; background:var(--live); animation:pulse 1.6s infinite; }
+  .live-now-tag .dot{ width:7px; height:7px; border-radius:50%; background:var(--lnc-color, var(--live)); animation:pulse 1.6s infinite; }
   .live-now-info{ min-width:0; }
   .live-now-info .lbl{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; margin-bottom:3px; }
   .live-now-info h3{ margin:0; font-family:var(--font-display); font-weight:600; font-size:clamp(17px,2vw,21px); line-height:1.2; }
@@ -190,7 +195,7 @@
   }
   .next-card:hover{ transform:translateY(-4px) scale(1.015); box-shadow:0 22px 44px rgba(0,0,0,0.4); }
   .next-card[data-kind="directo"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--live-soft), transparent 70%); }
-  .next-card[data-kind="evento"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--on-soft), transparent 70%); }
+  .next-card[data-kind="evento"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--evento-soft), transparent 70%); }
   .next-card[data-kind="video"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--video-soft), transparent 70%); }
 
   .kind-tag{
@@ -201,8 +206,8 @@
   .kind-tag .dot{ width:6px; height:6px; border-radius:50%; }
   .kind-tag.directo{ color:var(--live); background:var(--live-soft); border-color:rgba(255,77,94,0.35); }
   .kind-tag.directo .dot{ background:var(--live); animation:pulse 1.8s infinite; }
-  .kind-tag.evento{ color:var(--on); background:var(--on-soft); border-color:rgba(53,201,255,0.35); }
-  .kind-tag.evento .dot{ background:var(--on); }
+  .kind-tag.evento{ color:var(--evento); background:var(--evento-soft); border-color:rgba(34,197,94,0.35); }
+  .kind-tag.evento .dot{ background:var(--evento); }
   .kind-tag.video{ color:var(--video); background:var(--video-soft); border-color:rgba(167,139,250,0.35); }
   .kind-tag.video .dot{ background:var(--video); }
 
@@ -229,7 +234,7 @@
   .feed-card:hover{ transform:translateY(-2px) scale(1.008); box-shadow:0 14px 28px rgba(0,0,0,0.3); border-color:var(--border); }
   .feed-card::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:4px; }
   .feed-card[data-kind="directo"]::before{ background:var(--live); }
-  .feed-card[data-kind="evento"]::before{ background:var(--on); }
+  .feed-card[data-kind="evento"]::before{ background:var(--evento); }
   .feed-card[data-kind="video"]::before{ background:var(--video); }
 
   .feed-date{
@@ -245,7 +250,7 @@
     text-transform:uppercase; flex:none;
   }
   .feed-tag.directo{ color:var(--live); background:var(--live-soft); }
-  .feed-tag.evento{ color:var(--on); background:var(--on-soft); }
+  .feed-tag.evento{ color:var(--evento); background:var(--evento-soft); }
   .feed-tag.video{ color:var(--video); background:var(--video-soft); }
 
   .feed-empty{ font-size:13px; color:var(--muted-2); padding:20px; text-align:center; border:1px dashed var(--border); border-radius:var(--radius-md); }
@@ -272,6 +277,22 @@
   .modal h3{ margin:0 0 6px; font-family:var(--font-display); font-size:22px; font-weight:600; }
   .modal .modal-date{ font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-bottom:12px; }
   .modal p{ margin:0; color:var(--muted); line-height:1.6; font-size:14px; }
+
+  /* Barra de progreso: SOLO se muestra en el pop-up de "ahora en directo / en curso" */
+  .modal-progress{ margin-top:16px; }
+  .modal-progress-track{
+    position:relative; width:100%; height:8px; border-radius:999px; background:var(--surface-2);
+    border:1px solid var(--border-soft); overflow:hidden;
+  }
+  .modal-progress-fill{
+    position:absolute; inset:0 auto 0 0; height:100%; width:0%; border-radius:999px;
+    background:var(--live); transition:width 500ms ease;
+  }
+  .modal-progress-labels{
+    display:flex; justify-content:space-between; gap:10px; margin-top:7px;
+    font-family:var(--font-mono); font-size:10.5px; color:var(--muted); letter-spacing:.02em;
+  }
+
   .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; flex-wrap:wrap; }
   .btn{ border:none; border-radius:999px; padding:10px 16px; font-size:13px; font-weight:600; cursor:pointer; transition:transform 140ms ease; }
   .btn:hover{ transform:translateY(-1px) scale(1.03); }
@@ -364,6 +385,13 @@
       <h3 id="modalTitle"></h3>
       <div class="modal-date" id="modalDate"></div>
       <p id="modalContent"></p>
+      <div class="modal-progress" id="modalProgress" style="display:none;">
+        <div class="modal-progress-track"><div class="modal-progress-fill" id="modalProgressFill"></div></div>
+        <div class="modal-progress-labels">
+          <span id="modalProgressStart"></span>
+          <span id="modalProgressEnd"></span>
+        </div>
+      </div>
       <div class="modal-actions">
         <button class="btn secondary" id="closeModal">Cerrar</button>
         <a class="btn primary" id="modalLink" href="#" target="_blank" rel="noopener noreferrer">Ir al enlace</a>
@@ -384,8 +412,12 @@
        endTime: 'HH:MM' (OPCIONAL) → hora a la que termina el directo/evento, en la misma zona horaria
                indicada en "timeZone". Si no se indica, se usa la duración por defecto
                (EVENT_DURATION_MIN, 120 minutos) para saber cuándo se considera terminado.
-               Si la hora de fin es menor que la de inicio, se entiende que termina al día siguiente
-               (por ejemplo empieza 23:30 y termina 01:00). */
+       endOffsetDays: número (OPCIONAL) → cuántos días DESPUÉS del día de inicio termina el evento.
+               - Si no se indica (o es 0): el evento termina el MISMO día, a la hora de "endTime".
+               - Si se indica 1: termina al día SIGUIENTE, a la hora de "endTime".
+               - Si se indica 2, 3, 5...: termina esos días después, a la hora de "endTime".
+               Así puedes indicar exactamente qué día y a qué hora termina un evento que dura
+               varios días (por ejemplo, un torneo o un evento especial de varios días). */
     const events = [
       {
         day: 'lunes', time: '02:00', name: 'Shadows of doubt #6', type: 'directo',
@@ -458,20 +490,23 @@
         endTime: '19:00',
         startDate: '2026-07-26'
       }
-      /* Ejemplo de evento con repeticiones limitadas y hora de fin:
+      /* Ejemplo de evento con repeticiones limitadas y que dura varios días:
       {
         day: 'sábado', time: '18:00', name: 'Especial de aniversario', type: 'evento',
         content: 'Transmisión especial por el aniversario del canal',
         link: 'https://www.youtube.com/watch?v=XXXXXXXXXXX', timeZone: 'Europe/Madrid',
         startDate: '2026-08-01', // primera vez que ocurre
         repeat: 3,               // ocurre 3 semanas seguidas desde el 2026-08-01 y luego desaparece
-        endTime: '20:00'         // opcional: hora a la que termina (misma timeZone)
+        endTime: '20:00',        // hora a la que termina (misma timeZone)
+        endOffsetDays: 2         // termina 2 días después de empezar (ej: empieza sábado, acaba el lunes a las 20:00)
       }
       */
     ];
 
     const TYPE_LABEL = { directo: 'Directo', evento: 'Evento', video: 'Vídeo' };
     const TYPE_ORDER = ['directo', 'evento', 'video'];
+    // Textos que se muestran en la etiqueta del banner de "en curso", según el tipo de evento.
+    const LIVE_LABELS = { directo: 'Ahora en directo', evento: 'Evento en curso', video: 'Vídeo en curso' };
     const EVENT_DURATION_MIN = 120;
     const WEEKDAYS = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
     const WD_MAP = { Mon:0, Tue:1, Wed:2, Thu:3, Fri:4, Sat:5, Sun:6 };
@@ -511,18 +546,23 @@
     }
 
     /* Calcula el instante (ms UTC) en el que termina un evento que ha empezado en "startMs".
-       Si el evento tiene "endTime" se usa esa hora (en su propia timeZone); si el resultado
-       queda antes o igual que el inicio, se entiende que termina al día siguiente.
-       Si no tiene "endTime", se usa la duración por defecto EVENT_DURATION_MIN. */
+       - Si el evento NO tiene "endTime": termina a los EVENT_DURATION_MIN minutos por defecto.
+       - Si el evento tiene "endTime" pero NO tiene "endOffsetDays": termina el MISMO día del
+         inicio, a esa hora (aunque sea una hora "menor" que la de inicio).
+       - Si el evento tiene "endTime" Y "endOffsetDays": termina "endOffsetDays" días después
+         del día de inicio, a la hora indicada en "endTime". Así se pueden representar eventos
+         que duran varios días con total precisión. */
     function getEventEndMs(event, startMs){
       const tz = event.timeZone || 'UTC';
       if (event.endTime){
         const fmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' });
         const parts = fmt.formatToParts(new Date(startMs)).reduce((acc,{type,value}) => { acc[type]=value; return acc; }, {});
         const [eh, em] = event.endTime.split(':').map(Number);
-        let endMs = localWallToUtc(Number(parts.year), Number(parts.month) - 1, Number(parts.day), eh, em, tz);
-        if (endMs <= startMs) endMs += 24 * 3600000;
-        return endMs;
+        const rawOffset = Number(event.endOffsetDays);
+        const offsetDays = Number.isFinite(rawOffset) && rawOffset > 0 ? rawOffset : 0;
+        const baseDate = new Date(Number(parts.year), Number(parts.month) - 1, Number(parts.day));
+        baseDate.setDate(baseDate.getDate() + offsetDays);
+        return localWallToUtc(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), eh, em, tz);
       }
       return startMs + EVENT_DURATION_MIN * 60000;
     }
@@ -733,11 +773,11 @@
 
     /* ===================== Temas ===================== */
     const themes = {
-      oscuro:  { '--bg':'#0a0c13', '--surface':'#12141f', '--surface-2':'#171a27', '--surface-3':'#1d2131', '--text':'#eef0f7', '--muted':'#8b90a8', '--muted-2':'#5f6478', '--border':'#232739', '--border-soft':'#1a1d2b', '--accent':'#ffb020', '--accent-ink':'#1a1200', '--on':'#35c9ff', '--video':'#a78bfa' },
-      claro:   { '--bg':'#f3f4f8', '--surface':'#ffffff', '--surface-2':'#f3f4f9', '--surface-3':'#eceef6', '--text':'#171923', '--muted':'#6b7280', '--muted-2':'#9aa0b1', '--border':'#e2e4ee', '--border-soft':'#edeef5', '--accent':'#d97706', '--accent-ink':'#fffaf0', '--on':'#0284c7', '--video':'#7c3aed' },
-      verde:   { '--bg':'#06120d', '--surface':'#0c1f16', '--surface-2':'#0f2a1d', '--surface-3':'#123424', '--text':'#d9f5e6', '--muted':'#7fa895', '--muted-2':'#4d7867', '--border':'#163a29', '--border-soft':'#122e21', '--accent':'#34d399', '--accent-ink':'#04150d', '--on':'#a3e635', '--video':'#c084fc' },
-      rojo:    { '--bg':'#170a0d', '--surface':'#241014', '--surface-2':'#2c151a', '--surface-3':'#341920', '--text':'#fbe3e6', '--muted':'#c98f95', '--muted-2':'#8f5f64', '--border':'#3a151b', '--border-soft':'#2c1116', '--accent':'#f87171', '--accent-ink':'#1a0508', '--on':'#fb923c', '--video':'#e879f9' },
-      morado:  { '--bg':'#130a1f', '--surface':'#1e1032', '--surface-2':'#27143e', '--surface-3':'#301a4c', '--text':'#f1e8fc', '--muted':'#ab97cc', '--muted-2':'#7c669c', '--border':'#3b2159', '--border-soft':'#2c1846', '--accent':'#c084fc', '--accent-ink':'#1c0733', '--on':'#f472b6', '--video':'#818cf8' }
+      oscuro:  { '--bg':'#0a0c13', '--surface':'#12141f', '--surface-2':'#171a27', '--surface-3':'#1d2131', '--text':'#eef0f7', '--muted':'#8b90a8', '--muted-2':'#5f6478', '--border':'#232739', '--border-soft':'#1a1d2b', '--accent':'#ffb020', '--accent-ink':'#1a1200', '--on':'#35c9ff', '--evento':'#22c55e', '--video':'#a78bfa' },
+      claro:   { '--bg':'#f3f4f8', '--surface':'#ffffff', '--surface-2':'#f3f4f9', '--surface-3':'#eceef6', '--text':'#171923', '--muted':'#6b7280', '--muted-2':'#9aa0b1', '--border':'#e2e4ee', '--border-soft':'#edeef5', '--accent':'#d97706', '--accent-ink':'#fffaf0', '--on':'#0284c7', '--evento':'#16a34a', '--video':'#7c3aed' },
+      verde:   { '--bg':'#06120d', '--surface':'#0c1f16', '--surface-2':'#0f2a1d', '--surface-3':'#123424', '--text':'#d9f5e6', '--muted':'#7fa895', '--muted-2':'#4d7867', '--border':'#163a29', '--border-soft':'#122e21', '--accent':'#34d399', '--accent-ink':'#04150d', '--on':'#a3e635', '--evento':'#86efac', '--video':'#c084fc' },
+      rojo:    { '--bg':'#170a0d', '--surface':'#241014', '--surface-2':'#2c151a', '--surface-3':'#341920', '--text':'#fbe3e6', '--muted':'#c98f95', '--muted-2':'#8f5f64', '--border':'#3a151b', '--border-soft':'#2c1116', '--accent':'#f87171', '--accent-ink':'#1a0508', '--on':'#fb923c', '--evento':'#22c55e', '--video':'#e879f9' },
+      morado:  { '--bg':'#130a1f', '--surface':'#1e1032', '--surface-2':'#27143e', '--surface-3':'#301a4c', '--text':'#f1e8fc', '--muted':'#ab97cc', '--muted-2':'#7c669c', '--border':'#3b2159', '--border-soft':'#2c1846', '--accent':'#c084fc', '--accent-ink':'#1c0733', '--on':'#f472b6', '--evento':'#34d399', '--video':'#818cf8' }
     };
 
     function applyTheme(themeKey){
@@ -757,6 +797,10 @@
     const modalTitle = document.getElementById('modalTitle');
     const modalDate = document.getElementById('modalDate');
     const modalContent = document.getElementById('modalContent');
+    const modalProgress = document.getElementById('modalProgress');
+    const modalProgressFill = document.getElementById('modalProgressFill');
+    const modalProgressStart = document.getElementById('modalProgressStart');
+    const modalProgressEnd = document.getElementById('modalProgressEnd');
     const modalLink = document.getElementById('modalLink');
     const closeModalBtn = document.getElementById('closeModal');
     const liveBanner = document.getElementById('liveBanner');
@@ -770,8 +814,9 @@
     let monthCursor = new Date();
     monthCursor.setDate(1);
     let dayFilter = null; // {year, month, day} or null
+    let progressInterval = null; // intervalo que refresca la barra de progreso del modal "en curso"
 
-    /* ===================== "Ahora en directo" ===================== */
+    /* ===================== "Ahora en directo / en curso" ===================== */
     function renderLiveBanner(targetTimeZone){
       const live = getCurrentlyLiveEvent();
       liveBanner.innerHTML = '';
@@ -782,15 +827,16 @@
       liveBanner.classList.add('show');
       const type = eventType(live.event);
       const card = document.createElement('div');
-      card.className = 'live-now-card';
+      card.className = 'live-now-card ' + type;
       card.innerHTML = `
-        <span class="live-now-tag"><span class="dot"></span>Ahora en directo</span>
+        <span class="live-now-tag"><span class="dot"></span>${LIVE_LABELS[type] || 'En curso'}</span>
         <div class="live-now-info">
           <div class="lbl">${TYPE_LABEL[type]} en curso</div>
           <h3>${live.event.name}</h3>
         </div>
       `;
-      card.addEventListener('click', () => openModal(live.event, live.startMs, targetTimeZone));
+      // Solo aquí pasamos la info de inicio/fin para que el modal muestre la barra de progreso.
+      card.addEventListener('click', () => openModal(live.event, live.startMs, targetTimeZone, { startMs: live.startMs, endMs: live.endMs }));
       liveBanner.appendChild(card);
     }
 
@@ -811,6 +857,7 @@
           <h3>${best.event.name}</h3>
           <span class="next-date">${niceDay} · ${day} ${MESES_ABR[month]} · ${pad(hour)}:${pad(minute)}</span>
         `;
+        // Aquí NO se pasa info de progreso: este pop-up nunca debe mostrar la barra.
         card.addEventListener('click', () => openModal(best.event, best.ms, targetTimeZone));
         nextRow.appendChild(card);
       });
@@ -854,6 +901,7 @@
           </div>
           <span class="feed-tag ${type}">${TYPE_LABEL[type]}</span>
         `;
+        // Este pop-up tampoco debe mostrar la barra de progreso (solo el banner "en curso" la muestra).
         card.addEventListener('click', () => openModal(event, ms, targetTimeZone));
         feedEl.appendChild(card);
       });
@@ -908,7 +956,7 @@
           const pip = document.createElement('span');
           pip.className = 'pip';
           const kind = eventType(dayEvents[0].event);
-          pip.style.background = kind === 'directo' ? 'var(--live)' : kind === 'evento' ? 'var(--on)' : 'var(--video)';
+          pip.style.background = kind === 'directo' ? 'var(--live)' : kind === 'evento' ? 'var(--evento)' : 'var(--video)';
           cell.appendChild(pip);
           cell.addEventListener('click', () => {
             if (dayEvents.length === 1){
@@ -949,7 +997,7 @@
         item.className = 'destacado-item';
         item.innerHTML = `
           <span class="destacado-date">${day} ${MESES_ABR[m]}</span>
-          <span class="destacado-dot" style="background:${type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--on)' : 'var(--video)'}"></span>
+          <span class="destacado-dot" style="background:${type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--evento)' : 'var(--video)'}"></span>
           <span class="destacado-name">${event.name}</span>
         `;
         item.addEventListener('click', () => openModal(event, ms, targetTimeZone));
@@ -957,27 +1005,67 @@
       });
     }
 
+    /* ===================== Barra de progreso del modal "en curso" ===================== */
+    function progressLabel(ms, tz){
+      const p = fullPartsInTz(ms, tz);
+      const wd = new Intl.DateTimeFormat('es-ES', { timeZone: tz, weekday: 'short' }).format(new Date(ms)).replace('.', '');
+      const niceWd = wd.charAt(0).toUpperCase() + wd.slice(1);
+      return `${niceWd} ${p.day} ${MESES_ABR[p.month]} · ${pad(p.hour)}:${pad(p.minute)}`;
+    }
+
+    function updateModalProgress(event, liveInfo, targetTimeZone){
+      const { startMs, endMs } = liveInfo;
+      const total = endMs - startMs;
+      const now = Date.now();
+      const pct = total > 0 ? Math.min(100, Math.max(0, ((now - startMs) / total) * 100)) : 100;
+      modalProgressFill.style.width = pct + '%';
+      const type = eventType(event);
+      modalProgressFill.style.background = type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--evento)' : 'var(--video)';
+      modalProgressStart.textContent = progressLabel(startMs, targetTimeZone);
+      modalProgressEnd.textContent = progressLabel(endMs, targetTimeZone);
+    }
+
     /* ===================== Modal ===================== */
-    function openModal(event, ms, targetTimeZone){
+    function openModal(event, ms, targetTimeZone, liveInfo){
       const type = eventType(event);
       modal.classList.remove('is-closing');
       modalEyebrow.textContent = TYPE_LABEL[type];
-      modalEyebrow.style.color = type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--on)' : 'var(--video)';
+      modalEyebrow.style.color = type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--evento)' : 'var(--video)';
       modalTitle.textContent = event.name;
       if (ms){
-        const { hour, minute, day, month } = fullPartsInTz(ms, targetTimeZone);
+        const startParts = fullPartsInTz(ms, targetTimeZone);
         const dayLabel = new Intl.DateTimeFormat('es-ES', { timeZone: targetTimeZone, weekday: 'long' }).format(new Date(ms));
-        let dateText = `${dayLabel.charAt(0).toUpperCase()}${dayLabel.slice(1)} ${day} de ${MESES[month]} · ${pad(hour)}:${pad(minute)}`;
+        const niceDayLabel = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+        let dateText = `${niceDayLabel} ${startParts.day} de ${MESES[startParts.month]} · ${pad(startParts.hour)}:${pad(startParts.minute)}`;
         const endMs = getEventEndMs(event, ms);
         if (endMs){
           const endParts = fullPartsInTz(endMs, targetTimeZone);
-          dateText += ` – ${pad(endParts.hour)}:${pad(endParts.minute)}`;
+          const sameDay = endParts.year === startParts.year && endParts.month === startParts.month && endParts.day === startParts.day;
+          if (sameDay){
+            dateText += ` – ${pad(endParts.hour)}:${pad(endParts.minute)}`;
+          } else {
+            // El evento termina otro día: mostramos también el día y el mes de finalización.
+            const endDayLabel = new Intl.DateTimeFormat('es-ES', { timeZone: targetTimeZone, weekday: 'long' }).format(new Date(endMs));
+            const niceEndDayLabel = endDayLabel.charAt(0).toUpperCase() + endDayLabel.slice(1);
+            dateText += ` – ${niceEndDayLabel} ${endParts.day} de ${MESES[endParts.month]} · ${pad(endParts.hour)}:${pad(endParts.minute)}`;
+          }
         }
         modalDate.textContent = dateText;
       } else {
         modalDate.textContent = '';
       }
       modalContent.textContent = event.content || event.tooltip || '';
+
+      // La barra de progreso SOLO se muestra cuando el modal se abre desde el banner "en directo / en curso".
+      if (progressInterval){ clearInterval(progressInterval); progressInterval = null; }
+      if (liveInfo){
+        modalProgress.style.display = 'block';
+        updateModalProgress(event, liveInfo, targetTimeZone);
+        progressInterval = setInterval(() => updateModalProgress(event, liveInfo, targetTimeZone), 30000);
+      } else {
+        modalProgress.style.display = 'none';
+      }
+
       if (event.link){
         modalLink.href = event.link;
         modalLink.style.display = 'inline-flex';
@@ -993,6 +1081,7 @@
 
     function closeModal(){
       if (!modalBackdrop.classList.contains('active')) return;
+      if (progressInterval){ clearInterval(progressInterval); progressInterval = null; }
       modal.classList.remove('is-opening');
       modal.classList.add('is-closing');
       const handler = (e) => {
