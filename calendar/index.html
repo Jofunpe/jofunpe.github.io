@@ -19,6 +19,7 @@
     --on:#35c9ff; --on-soft:rgba(53,201,255,0.14);
     --evento:#22c55e; --evento-soft:rgba(34,197,94,0.14);
     --video:#a78bfa; --video-soft:rgba(167,139,250,0.16);
+    --encuesta:#facc15; --encuesta-soft:rgba(250,204,21,0.15);
     --radius-lg:18px; --radius-md:12px; --radius-sm:9px;
     --font-display:'Oswald', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'JetBrains Mono', monospace;
     --tooltip-bg: rgba(8,9,14,0.97); --tooltip-text:#f4f5fa;
@@ -150,7 +151,7 @@
   /* ---------- Main ---------- */
   .main{ display:flex; flex-direction:column; gap:22px; min-width:0; }
 
-  /* live banner (ahora en directo / evento en curso) */
+  /* live banner (ahora en directo / evento en curso / encuesta activa) */
   .live-banner{ display:none; }
   .live-banner.show{ display:block; }
   .live-now-card{
@@ -163,25 +164,87 @@
       linear-gradient(120deg, var(--lnc-soft, rgba(255,77,94,0.14)), var(--surface));
     animation:liveGlow 2.4s infinite;
   }
-  /* Variantes de color según el tipo de evento en curso */
-  .live-now-card.directo{ --lnc-color:var(--live); --lnc-border:rgba(255,77,94,0.45); --lnc-soft:rgba(255,77,94,0.14); --lnc-shadow:rgba(255,77,94,0.35); }
-  .live-now-card.evento{ --lnc-color:var(--evento); --lnc-border:rgba(34,197,94,0.45); --lnc-soft:rgba(34,197,94,0.14); --lnc-shadow:rgba(34,197,94,0.35); }
-  .live-now-card.video{ --lnc-color:var(--video); --lnc-border:rgba(167,139,250,0.45); --lnc-soft:rgba(167,139,250,0.14); --lnc-shadow:rgba(167,139,250,0.35); }
+
+  .live-now-card.directo{
+    --lnc-color:var(--live);
+    --lnc-border:rgba(255,77,94,0.45);
+    --lnc-soft:rgba(255,77,94,0.14);
+    --lnc-shadow:rgba(255,77,94,0.35);
+  }
+
+  .live-now-card.evento{
+    --lnc-color:var(--evento);
+    --lnc-border:rgba(34,197,94,0.45);
+    --lnc-soft:rgba(34,197,94,0.14);
+    --lnc-shadow:rgba(34,197,94,0.35);
+  }
+
+  .live-now-card.video{
+    --lnc-color:var(--video);
+    --lnc-border:rgba(167,139,250,0.45);
+    --lnc-soft:rgba(167,139,250,0.14);
+    --lnc-shadow:rgba(167,139,250,0.35);
+  }
+
+  .live-now-card.encuesta{
+    --lnc-color:var(--encuesta);
+    --lnc-border:rgba(250,204,21,0.50);
+    --lnc-soft:var(--encuesta-soft);
+    --lnc-shadow:rgba(250,204,21,0.35);
+  }
+
   .live-now-card:hover{ transform:translateY(-3px) scale(1.01); }
+
   @keyframes liveGlow{
     0%{ box-shadow:0 0 0 0 var(--lnc-shadow, rgba(255,77,94,0.35)); }
     70%{ box-shadow:0 0 0 10px rgba(0,0,0,0); }
     100%{ box-shadow:0 0 0 0 rgba(0,0,0,0); }
   }
+
   .live-now-tag{
     display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11.5px;
     letter-spacing:.16em; text-transform:uppercase; padding:7px 14px; border-radius:999px; flex:none;
     color:var(--lnc-color, var(--live)); background:var(--lnc-soft, var(--live-soft)); border:1px solid var(--lnc-border, rgba(255,77,94,0.4));
   }
-  .live-now-tag .dot{ width:7px; height:7px; border-radius:50%; background:var(--lnc-color, var(--live)); animation:pulse 1.6s infinite; }
-  .live-now-info{ min-width:0; }
-  .live-now-info .lbl{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; margin-bottom:3px; }
-  .live-now-info h3{ margin:0; font-family:var(--font-display); font-weight:600; font-size:clamp(17px,2vw,21px); line-height:1.2; }
+
+  .live-now-tag .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--lnc-color, var(--live));
+    animation:pulse 1.6s infinite;
+  }
+
+  .live-now-info{ min-width:0; flex:1; }
+  .live-now-info .lbl{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:3px;
+  }
+
+  .live-now-info h3{
+    margin:0; font-family:var(--font-display); font-weight:600;
+    font-size:clamp(17px,2vw,21px); line-height:1.2;
+  }
+
+  .live-survey-progress{
+    margin-top:11px;
+  }
+
+  .live-survey-progress-track{
+    position:relative; width:100%; height:8px; border-radius:999px;
+    background:var(--surface-2); border:1px solid rgba(250,204,21,0.2);
+    overflow:hidden;
+  }
+
+  .live-survey-progress-fill{
+    position:absolute; inset:0 auto 0 0; height:100%; width:0;
+    border-radius:999px; background:var(--encuesta);
+    transition:width 500ms ease;
+  }
+
+  .live-survey-progress-labels{
+    display:flex; justify-content:space-between; gap:10px;
+    margin-top:6px; font-family:var(--font-mono);
+    font-size:9.5px; color:var(--muted);
+  }
 
   .next-row{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
 
@@ -193,10 +256,12 @@
       repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 26px),
       linear-gradient(120deg, var(--surface-3), var(--surface));
   }
+
   .next-card:hover{ transform:translateY(-4px) scale(1.015); box-shadow:0 22px 44px rgba(0,0,0,0.4); }
   .next-card[data-kind="directo"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--live-soft), transparent 70%); }
   .next-card[data-kind="evento"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--evento-soft), transparent 70%); }
   .next-card[data-kind="video"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--video-soft), transparent 70%); }
+  .next-card[data-kind="encuesta"]::after{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(420px 180px at 90% 0%, var(--encuesta-soft), transparent 70%); }
 
   .kind-tag{
     display:inline-flex; width:fit-content; align-items:center; gap:7px; font-family:var(--font-mono);
@@ -210,11 +275,26 @@
   .kind-tag.evento .dot{ background:var(--evento); }
   .kind-tag.video{ color:var(--video); background:var(--video-soft); border-color:rgba(167,139,250,0.35); }
   .kind-tag.video .dot{ background:var(--video); }
+  .kind-tag.encuesta{ color:var(--encuesta); background:var(--encuesta-soft); border-color:rgba(250,204,21,0.4); }
+  .kind-tag.encuesta .dot{ background:var(--encuesta); }
 
-  .next-card h3{ font-family:var(--font-display); font-weight:600; font-size:clamp(18px,2.1vw,23px); margin:2px 0 0; line-height:1.15; position:relative; }
-  .next-card .next-date{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); letter-spacing:.05em; position:relative; text-transform:uppercase; }
+  .next-card h3{
+    font-family:var(--font-display); font-weight:600;
+    font-size:clamp(18px,2.1vw,23px); margin:2px 0 0;
+    line-height:1.15; position:relative;
+  }
+
+  .next-card .next-date{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--muted);
+    letter-spacing:.05em; position:relative; text-transform:uppercase;
+  }
+
   .next-card .cd{ display:flex; gap:6px; margin-top:6px; position:relative; }
-  .next-card .cd b{ font-family:var(--font-mono); font-size:12px; color:var(--text); background:var(--surface-2); border:1px solid var(--border-soft); padding:2px 7px; border-radius:6px; }
+  .next-card .cd b{
+    font-family:var(--font-mono); font-size:12px; color:var(--text);
+    background:var(--surface-2); border:1px solid var(--border-soft);
+    padding:2px 7px; border-radius:6px;
+  }
 
   .feed-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:0 2px; }
   .feed-title{ font-family:var(--font-display); font-size:18px; font-weight:600; letter-spacing:.01em; }
@@ -236,6 +316,7 @@
   .feed-card[data-kind="directo"]::before{ background:var(--live); }
   .feed-card[data-kind="evento"]::before{ background:var(--evento); }
   .feed-card[data-kind="video"]::before{ background:var(--video); }
+  .feed-card[data-kind="encuesta"]::before{ background:var(--encuesta); }
 
   .feed-date{
     font-family:var(--font-mono); font-size:11px; color:var(--muted); text-align:center; flex:none; width:52px;
@@ -252,6 +333,7 @@
   .feed-tag.directo{ color:var(--live); background:var(--live-soft); }
   .feed-tag.evento{ color:var(--evento); background:var(--evento-soft); }
   .feed-tag.video{ color:var(--video); background:var(--video-soft); }
+  .feed-tag.encuesta{ color:var(--encuesta); background:var(--encuesta-soft); }
 
   .feed-empty{ font-size:13px; color:var(--muted-2); padding:20px; text-align:center; border:1px dashed var(--border); border-radius:var(--radius-md); }
 
@@ -265,11 +347,13 @@
     opacity:0; visibility:hidden; pointer-events:none; transition:opacity 160ms ease, visibility 160ms ease;
   }
   .modal-backdrop.active{ opacity:1; visibility:visible; pointer-events:auto; }
+
   .modal{
     background:var(--surface); color:var(--text); border-radius:var(--radius-lg); padding:24px;
     max-width:420px; width:100%; box-shadow:0 30px 60px rgba(0,0,0,0.5); border:1px solid var(--border);
     transform:scale(0.94); opacity:0; transform-origin:center;
   }
+
   .modal-backdrop.active .modal{ opacity:1; transform:scale(1); }
   .modal.is-opening{ animation:modalZoomIn 170ms ease forwards; }
   .modal.is-closing{ animation:modalZoomOut 150ms ease forwards; }
@@ -278,7 +362,33 @@
   .modal .modal-date{ font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-bottom:12px; }
   .modal p{ margin:0; color:var(--muted); line-height:1.6; font-size:14px; }
 
-  /* Barra de progreso: SOLO se muestra en el pop-up de "ahora en directo / en curso" */
+  /* Opciones de encuesta */
+  .survey-options{
+    display:none;
+    flex-direction:column;
+    gap:7px;
+    margin-top:16px;
+  }
+
+  .survey-options-label{
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--encuesta);
+    margin-bottom:2px;
+  }
+
+  .survey-option{
+    padding:10px 12px;
+    border-radius:9px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-size:13px;
+  }
+
+  /* Barra de progreso */
   .modal-progress{ margin-top:16px; }
   .modal-progress-track{
     position:relative; width:100%; height:8px; border-radius:999px; background:var(--surface-2);
@@ -299,6 +409,12 @@
   .btn.primary{ background:var(--accent); color:var(--accent-ink); }
   .btn.secondary{ background:var(--surface-2); color:var(--text); border:1px solid var(--border); }
 
+  /* Botón amarillo para votar */
+  .btn.primary.survey{
+    background:var(--encuesta);
+    color:#171300;
+  }
+
   @keyframes modalZoomIn{ 0%{ opacity:0; transform:scale(0.94);} 100%{ opacity:1; transform:scale(1);} }
   @keyframes modalZoomOut{ 0%{ opacity:1; transform:scale(1);} 100%{ opacity:0; transform:scale(0.92);} }
 
@@ -306,8 +422,18 @@
     .shell{ grid-template-columns:1fr; }
     .sidebar{ position:static; }
   }
+
   @media (max-width:520px){
     .shell{ padding:20px 14px 40px; }
+
+    .live-now-card{
+      align-items:flex-start;
+      flex-direction:column;
+    }
+
+    .live-now-tag{
+      align-self:flex-start;
+    }
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -322,7 +448,7 @@
       <div class="brand-block">
         <div class="brand-eyebrow"><span class="dot"></span>Calendario del canal</div>
         <a class="brand-title" href="https://youtube.com/@jofun2" target="_blank" rel="noopener noreferrer">Jofunpe</a>
-        <p class="brand-sub">Directos, eventos y vídeos programados, ajustados a tu zona horaria.</p>
+        <p class="brand-sub">Directos, eventos, vídeos y encuestas programados, ajustados a tu zona horaria.</p>
         <a class="brand-link" href="https://jofunpe.com" target="_blank" rel="noopener noreferrer">Todas las redes de Jofunpe →</a>
       </div>
 
@@ -359,7 +485,7 @@
           <input id="timezoneSearch" type="search" placeholder="Buscar país o zona…" aria-label="Buscar zona horaria" />
           <select id="timezoneSelector" aria-label="Selector de zona horaria" size="6"></select>
         </div>
-        <div class="legend">Los eventos se recalculan al vuelo según la zona seleccionada.</div>
+        <div class="legend">Los eventos y encuestas se recalculan al vuelo según la zona seleccionada.</div>
       </div>
     </aside>
 
@@ -385,13 +511,22 @@
       <h3 id="modalTitle"></h3>
       <div class="modal-date" id="modalDate"></div>
       <p id="modalContent"></p>
+
+      <div class="survey-options" id="modalOptions">
+        <div class="survey-options-label">Opciones</div>
+        <div id="modalOptionsList"></div>
+      </div>
+
       <div class="modal-progress" id="modalProgress" style="display:none;">
-        <div class="modal-progress-track"><div class="modal-progress-fill" id="modalProgressFill"></div></div>
+        <div class="modal-progress-track">
+          <div class="modal-progress-fill" id="modalProgressFill"></div>
+        </div>
         <div class="modal-progress-labels">
           <span id="modalProgressStart"></span>
           <span id="modalProgressEnd"></span>
         </div>
       </div>
+
       <div class="modal-actions">
         <button class="btn secondary" id="closeModal">Cerrar</button>
         <a class="btn primary" id="modalLink" href="#" target="_blank" rel="noopener noreferrer">Ir al enlace</a>
@@ -402,22 +537,33 @@
   <script src="timezone.js"></script>
   <script>
     /* ===================== Datos de eventos ===================== */
-    /* type: 'directo' | 'evento' | 'video'
+    /* type: 'directo' | 'evento' | 'video' | 'encuesta'
        repeat: número de veces que se repite el evento (1, 2, 3...) contando desde "startDate",
                o la cadena 'infinite' para que se repita cada semana sin fin (comportamiento por defecto
                si no se indica "repeat").
+
        startDate: 'YYYY-MM-DD' → fecha de la PRIMERA aparición de este evento. Es obligatoria si
                "repeat" es un número, porque a partir de ahí se cuentan las repeticiones semana a semana.
                Si "repeat" es 'infinite' (o no se indica), startDate es opcional.
+
        endTime: 'HH:MM' (OPCIONAL) → hora a la que termina el directo/evento, en la misma zona horaria
                indicada en "timeZone". Si no se indica, se usa la duración por defecto
                (EVENT_DURATION_MIN, 120 minutos) para saber cuándo se considera terminado.
+
        endOffsetDays: número (OPCIONAL) → cuántos días DESPUÉS del día de inicio termina el evento.
                - Si no se indica (o es 0): el evento termina el MISMO día, a la hora de "endTime".
                - Si se indica 1: termina al día SIGUIENTE, a la hora de "endTime".
                - Si se indica 2, 3, 5...: termina esos días después, a la hora de "endTime".
-               Así puedes indicar exactamente qué día y a qué hora termina un evento que dura
-               varios días (por ejemplo, un torneo o un evento especial de varios días). */
+
+       ENCUESTAS:
+       type: 'encuesta'
+       startDate: fecha de inicio de la encuesta.
+       endDate: fecha EXACTA de finalización de la encuesta.
+       endTime: hora EXACTA de finalización.
+       options: array de opciones que se muestran informativamente en la web.
+       link: enlace externo donde se realiza la votación.
+       description: descripción de la encuesta.
+    */
     const events = [
       {
         day: 'lunes', time: '02:00', name: 'Shadows of doubt #7', type: 'directo',
@@ -449,7 +595,7 @@
       {
         day: 'jueves', time: '02:00', name: 'My winter car #39', type: 'directo',
         tooltip: 'Episodio 39 de la serie de My winter car', color: '#09A6E3',
-        content: 'episodio 39 de la serie en directo de My winter car',
+        content: 'Episodio 39 de la serie de My winter car en directo',
         link: '', timeZone: 'Europe/Madrid',
         repeat: '1',
         endTime: '5:00',
@@ -497,8 +643,32 @@
         repeat: '1',
         endTime: '5:00',
         startDate: '2026-08-17'
+      },
+
+      /* Ejemplo de encuesta */
+      /*
+      {
+        day: 'martes',
+        time: '20:00',
+        name: '¿Qué jugamos el domingo?',
+        type: 'encuesta',
+        content: 'Vota para decidir qué juego aparecerá en el próximo directo.',
+        description: 'La votación permanecerá abierta hasta el jueves a las 20:00.',
+        options: [
+          'My Winter Car',
+          'The Forest',
+          'Shadows of Doubt',
+          'Fortnite'
+        ],
+        link: 'https://ejemplo.com/encuesta',
+        timeZone: 'Europe/Madrid',
+        startDate: '2026-09-08',
+        endDate: '2026-09-10',
+        endTime: '20:00',
+        repeat: '1'
       }
-      
+      */
+
       /* Ejemplo de evento con repeticiones limitadas y que dura varios días:
       {
         day: 'sábado', time: '18:00', name: 'Especial de aniversario', type: 'evento',
@@ -512,10 +682,23 @@
       */
     ];
 
-    const TYPE_LABEL = { directo: 'Directo', evento: 'Evento', video: 'Vídeo' };
-    const TYPE_ORDER = ['directo', 'evento', 'video'];
+    const TYPE_LABEL = {
+      directo: 'Directo',
+      evento: 'Evento',
+      video: 'Vídeo',
+      encuesta: 'Encuesta'
+    };
+
+    const TYPE_ORDER = ['directo', 'evento', 'video', 'encuesta'];
+
     // Textos que se muestran en la etiqueta del banner de "en curso", según el tipo de evento.
-    const LIVE_LABELS = { directo: 'Ahora en directo', evento: 'Evento en curso', video: 'Vídeo en curso' };
+    const LIVE_LABELS = {
+      directo: 'Ahora en directo',
+      evento: 'Evento en curso',
+      video: 'Vídeo en curso',
+      encuesta: 'En votación ahora'
+    };
+
     const EVENT_DURATION_MIN = 120;
     const WEEKDAYS = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
     const WD_MAP = { Mon:0, Tue:1, Wed:2, Thu:3, Fri:4, Sat:5, Sun:6 };
@@ -554,38 +737,74 @@
       return localWallToUtc(target.getFullYear(), target.getMonth(), target.getDate(), hour, minute, event.timeZone || 'UTC');
     }
 
-    /* Calcula el instante (ms UTC) en el que termina un evento que ha empezado en "startMs".
-       - Si el evento NO tiene "endTime": termina a los EVENT_DURATION_MIN minutos por defecto.
-       - Si el evento tiene "endTime" pero NO tiene "endOffsetDays": termina el MISMO día del
-         inicio, a esa hora (aunque sea una hora "menor" que la de inicio).
-       - Si el evento tiene "endTime" Y "endOffsetDays": termina "endOffsetDays" días después
-         del día de inicio, a la hora indicada en "endTime". Así se pueden representar eventos
-         que duran varios días con total precisión. */
+    /* Calcula el instante en ms UTC en el que termina un evento o encuesta. */
     function getEventEndMs(event, startMs){
       const tz = event.timeZone || 'UTC';
+
+      /* Las encuestas tienen fecha final exacta */
+      if (event.type === 'encuesta' && event.endDate && event.endTime){
+        const [ey, em, ed] = event.endDate.split('-').map(Number);
+        const [eh, emin] = event.endTime.split(':').map(Number);
+
+        return localWallToUtc(
+          ey,
+          em - 1,
+          ed,
+          eh,
+          emin,
+          tz
+        );
+      }
+
       if (event.endTime){
-        const fmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' });
-        const parts = fmt.formatToParts(new Date(startMs)).reduce((acc,{type,value}) => { acc[type]=value; return acc; }, {});
+        const fmt = new Intl.DateTimeFormat('en-US', {
+          timeZone: tz,
+          year:'numeric',
+          month:'2-digit',
+          day:'2-digit'
+        });
+
+        const parts = fmt.formatToParts(new Date(startMs)).reduce(
+          (acc,{type,value}) => {
+            acc[type] = value;
+            return acc;
+          },
+          {}
+        );
+
         const [eh, em] = event.endTime.split(':').map(Number);
         const rawOffset = Number(event.endOffsetDays);
         const offsetDays = Number.isFinite(rawOffset) && rawOffset > 0 ? rawOffset : 0;
-        const baseDate = new Date(Number(parts.year), Number(parts.month) - 1, Number(parts.day));
+
+        const baseDate = new Date(
+          Number(parts.year),
+          Number(parts.month) - 1,
+          Number(parts.day)
+        );
+
         baseDate.setDate(baseDate.getDate() + offsetDays);
-        return localWallToUtc(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), eh, em, tz);
+
+        return localWallToUtc(
+          baseDate.getFullYear(),
+          baseDate.getMonth(),
+          baseDate.getDate(),
+          eh,
+          em,
+          tz
+        );
       }
+
       return startMs + EVENT_DURATION_MIN * 60000;
     }
 
     /* ---------- Repeticiones: número de ocurrencias limitado o infinito ---------- */
-    // Devuelve el lunes (00:00 local) de la semana en la que cae event.startDate, o null si no hay startDate.
+
     function startMondayOf(event){
       if (!event.startDate) return null;
       const [sy, sm, sd] = event.startDate.split('-').map(Number);
       return mondayOf(new Date(sy, sm - 1, sd));
     }
 
-    // Devuelve el número de orden (1 = primera vez, 2 = segunda...) de la ocurrencia que cae en la semana
-    // cuyo lunes es "weekMonday". Si el evento no tiene startDate, devuelve null (no se puede contar).
     function occurrenceOrdinal(event, weekMonday){
       const startMonday = startMondayOf(event);
       if (!startMonday) return null;
@@ -593,147 +812,278 @@
       return diffWeeks + 1;
     }
 
-    // ¿Debe aparecer este evento en la semana cuyo lunes es "weekMonday"?
     function isEventActiveInWeek(event, weekMonday){
       const repeat = event.repeat;
       if (repeat === undefined || repeat === null || repeat === 'infinite') return true;
+
       const n = Number(repeat);
-      if (!Number.isFinite(n) || n < 1) return true; // valor no reconocido -> se trata como infinito
+      if (!Number.isFinite(n) || n < 1) return true;
+
       const ordinal = occurrenceOrdinal(event, weekMonday);
-      if (ordinal === null) return true; // sin startDate no se puede acotar, se muestra siempre
+      if (ordinal === null) return true;
+
       return ordinal >= 1 && ordinal <= n;
     }
 
-    function eventType(event){ return TYPE_LABEL[event.type] ? event.type : 'directo'; }
+    function eventType(event){
+      return TYPE_LABEL[event.type] ? event.type : 'directo';
+    }
 
     function nextOccurrence(event, fromMs = Date.now()){
       const monday = mondayOf(new Date(fromMs));
+
       for (let i = 0; i < 300; i++){
-        const wk = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 7 * i);
+        const wk = new Date(
+          monday.getFullYear(),
+          monday.getMonth(),
+          monday.getDate() + 7 * i
+        );
+
         if (!isEventActiveInWeek(event, wk)) {
-          // Si ya hemos agotado las repeticiones (y no es infinito), no hace falta seguir buscando más lejos.
           const repeat = event.repeat;
-          if (repeat !== undefined && repeat !== null && repeat !== 'infinite') {
+
+          if (
+            repeat !== undefined &&
+            repeat !== null &&
+            repeat !== 'infinite'
+          ){
             const n = Number(repeat);
             const ordinal = occurrenceOrdinal(event, wk);
-            if (Number.isFinite(n) && ordinal !== null && ordinal > n) return null;
+
+            if (
+              Number.isFinite(n) &&
+              ordinal !== null &&
+              ordinal > n
+            ){
+              return null;
+            }
           }
+
           continue;
         }
+
         const ms = eventUtcMsForWeek(event, wk);
+
         if (ms >= fromMs) return ms;
       }
+
       return null;
     }
 
     function nextOccurrenceByType(type, fromMs = Date.now()){
       let best = null;
-      events.filter((e) => eventType(e) === type).forEach((event) => {
-        const ms = nextOccurrence(event, fromMs);
-        if (ms !== null && (!best || ms < best.ms)) best = { event, ms };
-      });
+
+      events
+        .filter((e) => eventType(e) === type)
+        .forEach((event) => {
+          const ms = nextOccurrence(event, fromMs);
+
+          if (
+            ms !== null &&
+            (!best || ms < best.ms)
+          ){
+            best = { event, ms };
+          }
+        });
+
       return best;
     }
 
     function generateUpcoming(weeksAhead = 10, fromMs = Date.now()){
       const monday = mondayOf(new Date(fromMs));
       const results = [];
+
       events.forEach((event) => {
         for (let i = 0; i < weeksAhead; i++){
-          const wk = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 7 * i);
+          const wk = new Date(
+            monday.getFullYear(),
+            monday.getMonth(),
+            monday.getDate() + 7 * i
+          );
+
           if (!isEventActiveInWeek(event, wk)) continue;
+
           const ms = eventUtcMsForWeek(event, wk);
-          if (ms >= fromMs) results.push({ event, ms });
+
+          if (ms >= fromMs){
+            results.push({
+              event,
+              ms
+            });
+          }
         }
       });
+
       return results.sort((a, b) => a.ms - b.ms);
     }
 
-    // Igual que generateUpcoming, pero solo con la próxima ocurrencia de cada evento DISTINTO,
-    // hasta un máximo de "maxCount" eventos diferentes.
     function generateUpcomingUnique(maxCount, fromMs = Date.now()){
       const upcoming = generateUpcoming(10, fromMs);
       const seen = new Set();
       const result = [];
+
       for (const item of upcoming){
         if (seen.has(item.event)) continue;
+
         seen.add(item.event);
         result.push(item);
+
         if (result.length >= maxCount) break;
       }
+
       return result;
     }
 
     function monthOccurrences(year, month, tz){
-      const monthStart = localWallToUtc(year, month, 1, 0, 0, tz);
+      const monthStart = localWallToUtc(
+        year,
+        month,
+        1,
+        0,
+        0,
+        tz
+      );
+
       const nextM = month === 11 ? 0 : month + 1;
       const nextY = month === 11 ? year + 1 : year;
-      const monthEnd = localWallToUtc(nextY, nextM, 1, 0, 0, tz);
+
+      const monthEnd = localWallToUtc(
+        nextY,
+        nextM,
+        1,
+        0,
+        0,
+        tz
+      );
+
       const results = [];
+
       const scanStart = mondayOf(new Date(year, month, 1));
       scanStart.setDate(scanStart.getDate() - 7);
+
       events.forEach((event) => {
         let wk = new Date(scanStart);
+
         for (let i = 0; i < 8; i++){
-          if (isEventActiveInWeek(event, wk)) {
+          if (isEventActiveInWeek(event, wk)){
             const ms = eventUtcMsForWeek(event, wk);
-            if (ms >= monthStart && ms < monthEnd) results.push({ event, ms });
+
+            if (
+              ms >= monthStart &&
+              ms < monthEnd
+            ){
+              results.push({
+                event,
+                ms
+              });
+            }
           }
-          wk = new Date(wk.getFullYear(), wk.getMonth(), wk.getDate() + 7);
+
+          wk = new Date(
+            wk.getFullYear(),
+            wk.getMonth(),
+            wk.getDate() + 7
+          );
         }
       });
+
       return results.sort((a, b) => a.ms - b.ms);
     }
 
-    /* Busca si hay algún evento en curso justo ahora (fromMs). Comprueba la ocurrencia de esta
-       semana y la de la semana anterior para cada evento (por si empezó antes de medianoche del
-       lunes o dura más de lo habitual) y devuelve el primero cuyo rango [inicio, fin) contenga
-       "fromMs". Si no hay ninguno en directo ahora mismo, devuelve null. */
+    /* Busca si hay algún evento/encuesta en curso justo ahora. */
     function getCurrentlyLiveEvent(fromMs = Date.now()){
       const monday = mondayOf(new Date(fromMs));
-      const prevMonday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() - 7);
+      const prevMonday = new Date(
+        monday.getFullYear(),
+        monday.getMonth(),
+        monday.getDate() - 7
+      );
+
       let found = null;
+
       events.forEach((event) => {
         [prevMonday, monday].forEach((wk) => {
           if (!isEventActiveInWeek(event, wk)) return;
+
           const startMs = eventUtcMsForWeek(event, wk);
           const endMs = getEventEndMs(event, startMs);
-          if (fromMs >= startMs && fromMs < endMs) {
-            found = { event, startMs, endMs };
+
+          if (
+            fromMs >= startMs &&
+            fromMs < endMs
+          ){
+            found = {
+              event,
+              startMs,
+              endMs
+            };
           }
         });
       });
+
       return found;
     }
 
     /* ===================== Zonas horarias ===================== */
-    const zoneData = Array.isArray(window.timeZoneEntries) ? window.timeZoneEntries : [];
-    const regionNames = typeof Intl.DisplayNames === 'function' ? new Intl.DisplayNames(['es'], { type: 'region' }) : null;
+    const zoneData = Array.isArray(window.timeZoneEntries)
+      ? window.timeZoneEntries
+      : [];
 
-    function getCountryName(code){ return (regionNames && regionNames.of(code)) || code; }
-    function formatZoneVariant(zone){
-      const parts = zone.split('/').slice(1).filter(Boolean);
-      return parts.join(' / ').replace(/_/g, ' ') || zone;
+    const regionNames =
+      typeof Intl.DisplayNames === 'function'
+        ? new Intl.DisplayNames(['es'], { type: 'region' })
+        : null;
+
+    function getCountryName(code){
+      return (regionNames && regionNames.of(code)) || code;
     }
+
+    function formatZoneVariant(zone){
+      const parts = zone
+        .split('/')
+        .slice(1)
+        .filter(Boolean);
+
+      return parts.join(' / ')
+        .replace(/_/g, ' ') || zone;
+    }
+
     function buildGroupedTimezones(){
       const grouped = new Map();
+
       zoneData.forEach(({ countryCode, zone }) => {
         if (!countryCode || !zone) return;
+
         countryCode.split(',').forEach((code) => {
           const trimmed = code.trim();
+
           if (!trimmed) return;
-          if (!grouped.has(trimmed)) grouped.set(trimmed, new Set());
+
+          if (!grouped.has(trimmed)){
+            grouped.set(trimmed, new Set());
+          }
+
           grouped.get(trimmed).add(zone);
         });
       });
+
       return Array.from(grouped.entries())
-        .map(([code, zones]) => ({ code, name: getCountryName(code), zones: Array.from(zones) }))
+        .map(([code, zones]) => ({
+          code,
+          name: getCountryName(code),
+          zones: Array.from(zones)
+        }))
         .sort((a, b) => a.name.localeCompare(b.name, 'es'));
     }
+
     const groupedTimezones = buildGroupedTimezones();
 
     function normalizeText(value){
-      return value.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/[^\p{Letter}\p{Number}\s()./-]/gu, '');
+      return value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .replace(/[^\p{Letter}\p{Number}\s()./-]/gu, '');
     }
 
     function rebuildTimezoneOptions(selectedValue, searchTerm = ''){
@@ -748,8 +1098,16 @@
           const label = name;
           const labelLower = label.toLowerCase();
           const labelNormalized = normalizeText(label);
-          if (!isSearching || labelLower.includes(lowerTerm) || labelNormalized.includes(normalizedTerm)){
-            options.push({ value: zones[0], label });
+
+          if (
+            !isSearching ||
+            labelLower.includes(lowerTerm) ||
+            labelNormalized.includes(normalizedTerm)
+          ){
+            options.push({
+              value: zones[0],
+              label
+            });
           }
         } else {
           zones.forEach((zone) => {
@@ -757,61 +1115,183 @@
             const label = `${name} (${variant})`;
             const labelLower = label.toLowerCase();
             const labelNormalized = normalizeText(label);
-            if (!isSearching || labelLower.includes(lowerTerm) || labelNormalized.includes(normalizedTerm)){
-              options.push({ value: zone, label });
+
+            if (
+              !isSearching ||
+              labelLower.includes(lowerTerm) ||
+              labelNormalized.includes(normalizedTerm)
+            ){
+              options.push({
+                value: zone,
+                label
+              });
             }
           });
         }
       });
 
-      options.sort((a, b) => a.label.localeCompare(b.label, 'es'));
+      options.sort((a, b) =>
+        a.label.localeCompare(b.label, 'es')
+      );
+
       timezoneSelector.innerHTML = '';
+
       options.forEach(({ value, label }) => {
         const opt = document.createElement('option');
-        opt.value = value; opt.textContent = label;
+
+        opt.value = value;
+        opt.textContent = label;
+
         timezoneSelector.appendChild(opt);
       });
 
-      if (selectedValue && options.some((opt) => opt.value === selectedValue)){
+      if (
+        selectedValue &&
+        options.some((opt) => opt.value === selectedValue)
+      ){
         timezoneSelector.value = selectedValue;
       } else if (options.length > 0){
         timezoneSelector.value = options[0].value;
       }
+
       return options;
     }
 
     /* ===================== Temas ===================== */
     const themes = {
-      oscuro:  { '--bg':'#0a0c13', '--surface':'#12141f', '--surface-2':'#171a27', '--surface-3':'#1d2131', '--text':'#eef0f7', '--muted':'#8b90a8', '--muted-2':'#5f6478', '--border':'#232739', '--border-soft':'#1a1d2b', '--accent':'#ffb020', '--accent-ink':'#1a1200', '--on':'#35c9ff', '--evento':'#22c55e', '--video':'#a78bfa' },
-      claro:   { '--bg':'#f3f4f8', '--surface':'#ffffff', '--surface-2':'#f3f4f9', '--surface-3':'#eceef6', '--text':'#171923', '--muted':'#6b7280', '--muted-2':'#9aa0b1', '--border':'#e2e4ee', '--border-soft':'#edeef5', '--accent':'#d97706', '--accent-ink':'#fffaf0', '--on':'#0284c7', '--evento':'#16a34a', '--video':'#7c3aed' },
-      verde:   { '--bg':'#06120d', '--surface':'#0c1f16', '--surface-2':'#0f2a1d', '--surface-3':'#123424', '--text':'#d9f5e6', '--muted':'#7fa895', '--muted-2':'#4d7867', '--border':'#163a29', '--border-soft':'#122e21', '--accent':'#34d399', '--accent-ink':'#04150d', '--on':'#a3e635', '--evento':'#86efac', '--video':'#c084fc' },
-      rojo:    { '--bg':'#170a0d', '--surface':'#241014', '--surface-2':'#2c151a', '--surface-3':'#341920', '--text':'#fbe3e6', '--muted':'#c98f95', '--muted-2':'#8f5f64', '--border':'#3a151b', '--border-soft':'#2c1116', '--accent':'#f87171', '--accent-ink':'#1a0508', '--on':'#fb923c', '--evento':'#22c55e', '--video':'#e879f9' },
-      morado:  { '--bg':'#130a1f', '--surface':'#1e1032', '--surface-2':'#27143e', '--surface-3':'#301a4c', '--text':'#f1e8fc', '--muted':'#ab97cc', '--muted-2':'#7c669c', '--border':'#3b2159', '--border-soft':'#2c1846', '--accent':'#c084fc', '--accent-ink':'#1c0733', '--on':'#f472b6', '--evento':'#34d399', '--video':'#818cf8' }
+      oscuro:  {
+        '--bg':'#0a0c13',
+        '--surface':'#12141f',
+        '--surface-2':'#171a27',
+        '--surface-3':'#1d2131',
+        '--text':'#eef0f7',
+        '--muted':'#8b90a8',
+        '--muted-2':'#5f6478',
+        '--border':'#232739',
+        '--border-soft':'#1a1d2b',
+        '--accent':'#ffb020',
+        '--accent-ink':'#1a1200',
+        '--on':'#35c9ff',
+        '--evento':'#22c55e',
+        '--video':'#a78bfa',
+        '--encuesta':'#facc15'
+      },
+
+      claro:   {
+        '--bg':'#f3f4f8',
+        '--surface':'#ffffff',
+        '--surface-2':'#f3f4f9',
+        '--surface-3':'#eceef6',
+        '--text':'#171923',
+        '--muted':'#6b7280',
+        '--muted-2':'#9aa0b1',
+        '--border':'#e2e4ee',
+        '--border-soft':'#edeef5',
+        '--accent':'#d97706',
+        '--accent-ink':'#fffaf0',
+        '--on':'#0284c7',
+        '--evento':'#16a34a',
+        '--video':'#7c3aed',
+        '--encuesta':'#ca8a04'
+      },
+
+      verde:   {
+        '--bg':'#06120d',
+        '--surface':'#0c1f16',
+        '--surface-2':'#0f2a1d',
+        '--surface-3':'#123424',
+        '--text':'#d9f5e6',
+        '--muted':'#7fa895',
+        '--muted-2':'#4d7867',
+        '--border':'#163a29',
+        '--border-soft':'#122e21',
+        '--accent':'#34d399',
+        '--accent-ink':'#04150d',
+        '--on':'#a3e635',
+        '--evento':'#86efac',
+        '--video':'#c084fc',
+        '--encuesta':'#facc15'
+      },
+
+      rojo:    {
+        '--bg':'#170a0d',
+        '--surface':'#241014',
+        '--surface-2':'#2c151a',
+        '--surface-3':'#341920',
+        '--text':'#fbe3e6',
+        '--muted':'#c98f95',
+        '--muted-2':'#8f5f64',
+        '--border':'#3a151b',
+        '--border-soft':'#2c1116',
+        '--accent':'#f87171',
+        '--accent-ink':'#1a0508',
+        '--on':'#fb923c',
+        '--evento':'#22c55e',
+        '--video':'#e879f9',
+        '--encuesta':'#facc15'
+      },
+
+      morado:  {
+        '--bg':'#130a1f',
+        '--surface':'#1e1032',
+        '--surface-2':'#27143e',
+        '--surface-3':'#301a4c',
+        '--text':'#f1e8fc',
+        '--muted':'#ab97cc',
+        '--muted-2':'#7c669c',
+        '--border':'#3b2159',
+        '--border-soft':'#2c1846',
+        '--accent':'#c084fc',
+        '--accent-ink':'#1c0733',
+        '--on':'#f472b6',
+        '--evento':'#34d399',
+        '--video':'#818cf8',
+        '--encuesta':'#facc15'
+      }
     };
 
     function applyTheme(themeKey){
       const theme = themes[themeKey] || themes.oscuro;
-      Object.entries(theme).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
+
+      Object.entries(theme).forEach(([k, v]) =>
+        document.documentElement.style.setProperty(k, v)
+      );
+
       localStorage.setItem('jofun2-theme', themeKey);
-      document.querySelectorAll('#themeSeg button').forEach((b) => b.classList.toggle('active', b.dataset.theme === themeKey));
+
+      document
+        .querySelectorAll('#themeSeg button')
+        .forEach((b) =>
+          b.classList.toggle(
+            'active',
+            b.dataset.theme === themeKey
+          )
+        );
     }
 
     /* ===================== Referencias DOM ===================== */
     const timezoneSelector = document.getElementById('timezoneSelector');
     const timezoneSearch = document.getElementById('timezoneSearch');
     const themeSeg = document.getElementById('themeSeg');
+
     const modalBackdrop = document.getElementById('modalBackdrop');
     const modal = modalBackdrop.querySelector('.modal');
     const modalEyebrow = document.getElementById('modalEyebrow');
     const modalTitle = document.getElementById('modalTitle');
     const modalDate = document.getElementById('modalDate');
     const modalContent = document.getElementById('modalContent');
+
+    const modalOptions = document.getElementById('modalOptions');
+    const modalOptionsList = document.getElementById('modalOptionsList');
+
     const modalProgress = document.getElementById('modalProgress');
     const modalProgressFill = document.getElementById('modalProgressFill');
     const modalProgressStart = document.getElementById('modalProgressStart');
     const modalProgressEnd = document.getElementById('modalProgressEnd');
+
     const modalLink = document.getElementById('modalLink');
     const closeModalBtn = document.getElementById('closeModal');
+
     const liveBanner = document.getElementById('liveBanner');
     const nextRow = document.getElementById('nextRow');
     const feedEl = document.getElementById('feed');
@@ -822,67 +1302,237 @@
 
     let monthCursor = new Date();
     monthCursor.setDate(1);
-    let dayFilter = null; // {year, month, day} or null
-    let progressInterval = null; // intervalo que refresca la barra de progreso del modal "en curso"
 
-    /* ===================== "Ahora en directo / en curso" ===================== */
+    let dayFilter = null;
+    let progressInterval = null;
+    let liveSurveyProgressInterval = null;
+
+    /* ===================== "Ahora en directo / en curso / en votación" ===================== */
     function renderLiveBanner(targetTimeZone){
       const live = getCurrentlyLiveEvent();
+
       liveBanner.innerHTML = '';
+
       if (!live){
         liveBanner.classList.remove('show');
+
+        if (liveSurveyProgressInterval){
+          clearInterval(liveSurveyProgressInterval);
+          liveSurveyProgressInterval = null;
+        }
+
         return;
       }
+
       liveBanner.classList.add('show');
+
       const type = eventType(live.event);
+      const isSurvey = type === 'encuesta';
+
       const card = document.createElement('div');
       card.className = 'live-now-card ' + type;
+
       card.innerHTML = `
-        <span class="live-now-tag"><span class="dot"></span>${LIVE_LABELS[type] || 'En curso'}</span>
+        <span class="live-now-tag">
+          <span class="dot"></span>
+          ${LIVE_LABELS[type] || 'En curso'}
+        </span>
+
         <div class="live-now-info">
-          <div class="lbl">${TYPE_LABEL[type]} en curso</div>
+          <div class="lbl">
+            ${isSurvey ? 'Encuesta activa' : `${TYPE_LABEL[type]} en curso`}
+          </div>
+
           <h3>${live.event.name}</h3>
+
+          ${
+            isSurvey
+              ? `
+                <div class="live-survey-progress">
+                  <div class="live-survey-progress-track">
+                    <div
+                      class="live-survey-progress-fill"
+                      id="liveSurveyProgressFill"
+                    ></div>
+                  </div>
+
+                  <div class="live-survey-progress-labels">
+                    <span id="liveSurveyProgressStart"></span>
+                    <span id="liveSurveyProgressEnd"></span>
+                  </div>
+                </div>
+              `
+              : ''
+          }
         </div>
       `;
-      // Solo aquí pasamos la info de inicio/fin para que el modal muestre la barra de progreso.
-      card.addEventListener('click', () => openModal(live.event, live.startMs, targetTimeZone, { startMs: live.startMs, endMs: live.endMs }));
+
+      card.addEventListener(
+        'click',
+        () =>
+          openModal(
+            live.event,
+            live.startMs,
+            targetTimeZone,
+            {
+              startMs: live.startMs,
+              endMs: live.endMs
+            }
+          )
+      );
+
       liveBanner.appendChild(card);
+
+      if (liveSurveyProgressInterval){
+        clearInterval(liveSurveyProgressInterval);
+        liveSurveyProgressInterval = null;
+      }
+
+      if (isSurvey){
+        updateLiveSurveyProgress(
+          live.startMs,
+          live.endMs,
+          targetTimeZone
+        );
+
+        liveSurveyProgressInterval = setInterval(() => {
+          const current = getCurrentlyLiveEvent();
+
+          if (
+            !current ||
+            eventType(current.event) !== 'encuesta'
+          ){
+            renderLiveBanner(targetTimeZone);
+            return;
+          }
+
+          updateLiveSurveyProgress(
+            current.startMs,
+            current.endMs,
+            targetTimeZone
+          );
+        }, 1000);
+      }
+    }
+
+    function updateLiveSurveyProgress(
+      startMs,
+      endMs,
+      targetTimeZone
+    ){
+      const fill = document.getElementById('liveSurveyProgressFill');
+      const startLabel = document.getElementById('liveSurveyProgressStart');
+      const endLabel = document.getElementById('liveSurveyProgressEnd');
+
+      if (!fill || !startLabel || !endLabel) return;
+
+      const now = Date.now();
+      const total = endMs - startMs;
+
+      const pct =
+        total > 0
+          ? Math.min(
+              100,
+              Math.max(
+                0,
+                ((now - startMs) / total) * 100
+              )
+            )
+          : 100;
+
+      fill.style.width = pct + '%';
+
+      startLabel.textContent =
+        progressLabel(startMs, targetTimeZone);
+
+      endLabel.textContent =
+        progressLabel(endMs, targetTimeZone);
     }
 
     /* ===================== "Próximo X" ===================== */
     function renderNextRow(targetTimeZone){
       nextRow.innerHTML = '';
+
       TYPE_ORDER.forEach((type) => {
         const best = nextOccurrenceByType(type);
+
         if (!best) return;
-        const { hour, minute, day, month } = fullPartsInTz(best.ms, targetTimeZone);
+
+        const {
+          hour,
+          minute,
+          day,
+          month
+        } = fullPartsInTz(
+          best.ms,
+          targetTimeZone
+        );
+
         const card = document.createElement('div');
+
         card.className = 'next-card';
         card.dataset.kind = type;
-        const dayLabel = new Intl.DateTimeFormat('es-ES', { timeZone: targetTimeZone, weekday: 'long' }).format(new Date(best.ms));
-        const niceDay = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+
+        const dayLabel =
+          new Intl.DateTimeFormat('es-ES', {
+            timeZone: targetTimeZone,
+            weekday: 'long'
+          }).format(new Date(best.ms));
+
+        const niceDay =
+          dayLabel.charAt(0).toUpperCase() +
+          dayLabel.slice(1);
+
         card.innerHTML = `
-          <span class="kind-tag ${type}"><span class="dot"></span>Próximo ${TYPE_LABEL[type].toLowerCase()}</span>
+          <span class="kind-tag ${type}">
+            <span class="dot"></span>
+            Próximo ${TYPE_LABEL[type].toLowerCase()}
+          </span>
+
           <h3>${best.event.name}</h3>
-          <span class="next-date">${niceDay} · ${day} ${MESES_ABR[month]} · ${pad(hour)}:${pad(minute)}</span>
+
+          <span class="next-date">
+            ${niceDay} · ${day} ${MESES_ABR[month]} · ${pad(hour)}:${pad(minute)}
+          </span>
         `;
-        // Aquí NO se pasa info de progreso: este pop-up nunca debe mostrar la barra.
-        card.addEventListener('click', () => openModal(best.event, best.ms, targetTimeZone));
+
+        card.addEventListener(
+          'click',
+          () =>
+            openModal(
+              best.event,
+              best.ms,
+              targetTimeZone
+            )
+        );
+
         nextRow.appendChild(card);
       });
+
       if (!nextRow.children.length){
-        nextRow.innerHTML = '<div class="feed-empty">No hay nada programado por ahora.</div>';
+        nextRow.innerHTML =
+          '<div class="feed-empty">No hay nada programado por ahora.</div>';
       }
     }
 
     /* ===================== Feed / próximamente ===================== */
     function renderFeed(targetTimeZone){
       let list;
+
       if (dayFilter){
         list = generateUpcoming(10).filter(({ ms }) => {
-          const p = fullPartsInTz(ms, targetTimeZone);
-          return p.year === dayFilter.year && p.month === dayFilter.month && p.day === dayFilter.day;
+          const p = fullPartsInTz(
+            ms,
+            targetTimeZone
+          );
+
+          return (
+            p.year === dayFilter.year &&
+            p.month === dayFilter.month &&
+            p.day === dayFilter.day
+          );
         });
+
         feedReset.classList.add('show');
       } else {
         list = generateUpcomingUnique(5);
@@ -890,28 +1540,66 @@
       }
 
       feedEl.innerHTML = '';
+
       if (!list.length){
-        feedEl.innerHTML = '<div class="feed-empty">No hay eventos programados para este día.</div>';
+        feedEl.innerHTML =
+          '<div class="feed-empty">No hay eventos programados para este día.</div>';
         return;
       }
 
       list.forEach(({ event, ms }) => {
-        const { hour, minute, day, month } = fullPartsInTz(ms, targetTimeZone);
+        const {
+          hour,
+          minute,
+          day,
+          month
+        } = fullPartsInTz(
+          ms,
+          targetTimeZone
+        );
+
         const type = eventType(event);
-        const isLiveNow = Date.now() >= ms && Date.now() < getEventEndMs(event, ms);
+
+        const isLiveNow =
+          Date.now() >= ms &&
+          Date.now() < getEventEndMs(event, ms);
+
         const card = document.createElement('div');
+
         card.className = 'feed-card';
         card.dataset.kind = type;
+
         card.innerHTML = `
-          <div class="feed-date"><b>${day}</b><span>${MESES_ABR[month]}</span></div>
-          <div class="feed-body">
-            <div class="fname">${event.name}${isLiveNow ? ' · 🔴' : ''}</div>
-            <div class="ftime">${pad(hour)}:${pad(minute)}</div>
+          <div class="feed-date">
+            <b>${day}</b>
+            <span>${MESES_ABR[month]}</span>
           </div>
-          <span class="feed-tag ${type}">${TYPE_LABEL[type]}</span>
+
+          <div class="feed-body">
+            <div class="fname">
+              ${event.name}${isLiveNow ? ' · 🔴' : ''}
+            </div>
+
+            <div class="ftime">
+              ${pad(hour)}:${pad(minute)}
+            </div>
+          </div>
+
+          <span class="feed-tag ${type}">
+            ${TYPE_LABEL[type]}
+          </span>
         `;
-        // Este pop-up tampoco debe mostrar la barra de progreso (solo el banner "en curso" la muestra).
-        card.addEventListener('click', () => openModal(event, ms, targetTimeZone));
+
+        card.addEventListener(
+          'click',
+          () =>
+            openModal(
+              event,
+              ms,
+              targetTimeZone
+            )
+        );
+
         feedEl.appendChild(card);
       });
     }
@@ -925,62 +1613,145 @@
     function renderMiniCalendar(targetTimeZone){
       const year = monthCursor.getFullYear();
       const month = monthCursor.getMonth();
-      calMonth.textContent = `${MESES[month].toUpperCase()} ${year}`;
 
-      const occurrences = monthOccurrences(year, month, targetTimeZone);
+      calMonth.textContent =
+        `${MESES[month].toUpperCase()} ${year}`;
+
+      const occurrences =
+        monthOccurrences(
+          year,
+          month,
+          targetTimeZone
+        );
+
       const byDay = new Map();
+
       occurrences.forEach(({ event, ms }) => {
-        const p = fullPartsInTz(ms, targetTimeZone);
-        if (!byDay.has(p.day)) byDay.set(p.day, []);
-        byDay.get(p.day).push({ event, ms });
+        const p = fullPartsInTz(
+          ms,
+          targetTimeZone
+        );
+
+        if (!byDay.has(p.day)){
+          byDay.set(p.day, []);
+        }
+
+        byDay.get(p.day).push({
+          event,
+          ms
+        });
       });
 
       calGrid.innerHTML = '';
+
       ['L','M','X','J','V','S','D'].forEach((wd) => {
         const el = document.createElement('div');
+
         el.className = 'cal-wd';
         el.textContent = wd;
+
         calGrid.appendChild(el);
       });
 
-      const firstOfMonth = new Date(year, month, 1);
-      const leadBlanks = (firstOfMonth.getDay() + 6) % 7;
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const todayParts = fullPartsInTz(Date.now(), targetTimeZone);
+      const firstOfMonth =
+        new Date(year, month, 1);
+
+      const leadBlanks =
+        (firstOfMonth.getDay() + 6) % 7;
+
+      const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+      const todayParts =
+        fullPartsInTz(
+          Date.now(),
+          targetTimeZone
+        );
 
       for (let i = 0; i < leadBlanks; i++){
-        const pad_ = document.createElement('div');
+        const pad_ =
+          document.createElement('div');
+
         pad_.className = 'cal-day pad';
+
         calGrid.appendChild(pad_);
       }
 
       for (let d = 1; d <= daysInMonth; d++){
-        const cell = document.createElement('div');
+        const cell =
+          document.createElement('div');
+
         cell.className = 'cal-day';
         cell.textContent = d;
+
         const dayEvents = byDay.get(d);
+
         if (dayEvents && dayEvents.length){
           cell.classList.add('has-event');
-          if (new Set(dayEvents.map((x) => eventType(x.event))).size > 1) cell.classList.add('multi');
-          const pip = document.createElement('span');
+
+          if (
+            new Set(
+              dayEvents.map(
+                (x) => eventType(x.event)
+              )
+            ).size > 1
+          ){
+            cell.classList.add('multi');
+          }
+
+          const pip =
+            document.createElement('span');
+
           pip.className = 'pip';
-          const kind = eventType(dayEvents[0].event);
-          pip.style.background = kind === 'directo' ? 'var(--live)' : kind === 'evento' ? 'var(--evento)' : 'var(--video)';
+
+          const kind =
+            eventType(
+              dayEvents[0].event
+            );
+
+          pip.style.background =
+            kind === 'directo'
+              ? 'var(--live)'
+              : kind === 'evento'
+                ? 'var(--evento)'
+                : kind === 'video'
+                  ? 'var(--video)'
+                  : 'var(--encuesta)';
+
           cell.appendChild(pip);
-          cell.addEventListener('click', () => {
-            if (dayEvents.length === 1){
-              // Un solo evento ese día -> abrir directamente el modal con la info y el enlace.
-              openModal(dayEvents[0].event, dayEvents[0].ms, targetTimeZone);
-            } else {
-              // Varios eventos ese día -> filtrar el feed de abajo para poder elegir cuál ver.
-              dayFilter = { year, month, day: d };
-              renderFeed(targetTimeZone);
+
+          cell.addEventListener(
+            'click',
+            () => {
+              if (dayEvents.length === 1){
+                openModal(
+                  dayEvents[0].event,
+                  dayEvents[0].ms,
+                  targetTimeZone
+                );
+              } else {
+                dayFilter = {
+                  year,
+                  month,
+                  day: d
+                };
+
+                renderFeed(
+                  targetTimeZone
+                );
+              }
             }
-          });
+          );
         }
-        if (todayParts.year === year && todayParts.month === month && todayParts.day === d){
+
+        if (
+          todayParts.year === year &&
+          todayParts.month === month &&
+          todayParts.day === d
+        ){
           cell.classList.add('today');
         }
+
         calGrid.appendChild(cell);
       }
     }
@@ -990,116 +1761,486 @@
       const year = monthCursor.getFullYear();
       const month = monthCursor.getMonth();
       const now = Date.now();
-      const upcoming = monthOccurrences(year, month, targetTimeZone)
-        .filter((x) => x.ms >= now && eventType(x.event) === 'evento')
+
+      const upcoming =
+        monthOccurrences(
+          year,
+          month,
+          targetTimeZone
+        )
+        .filter(
+          (x) =>
+            x.ms >= now &&
+            (
+              eventType(x.event) === 'evento' ||
+              eventType(x.event) === 'encuesta'
+            )
+        )
         .slice(0, 6);
 
       destacadosList.innerHTML = '';
+
       if (!upcoming.length){
-        destacadosList.innerHTML = '<div class="destacado-empty">Sin eventos pendientes este mes.</div>';
+        destacadosList.innerHTML =
+          '<div class="destacado-empty">Sin eventos pendientes este mes.</div>';
         return;
       }
+
       upcoming.forEach(({ event, ms }) => {
-        const { day, month: m } = fullPartsInTz(ms, targetTimeZone);
+        const {
+          day,
+          month: m
+        } = fullPartsInTz(
+          ms,
+          targetTimeZone
+        );
+
         const type = eventType(event);
-        const item = document.createElement('div');
+
+        const item =
+          document.createElement('div');
+
         item.className = 'destacado-item';
+
         item.innerHTML = `
-          <span class="destacado-date">${day} ${MESES_ABR[m]}</span>
-          <span class="destacado-dot" style="background:${type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--evento)' : 'var(--video)'}"></span>
-          <span class="destacado-name">${event.name}</span>
+          <span class="destacado-date">
+            ${day} ${MESES_ABR[m]}
+          </span>
+
+          <span
+            class="destacado-dot"
+            style="background:${
+              type === 'directo'
+                ? 'var(--live)'
+                : type === 'evento'
+                  ? 'var(--evento)'
+                  : type === 'video'
+                    ? 'var(--video)'
+                    : 'var(--encuesta)'
+            }"
+          ></span>
+
+          <span class="destacado-name">
+            ${event.name}
+          </span>
         `;
-        item.addEventListener('click', () => openModal(event, ms, targetTimeZone));
+
+        item.addEventListener(
+          'click',
+          () =>
+            openModal(
+              event,
+              ms,
+              targetTimeZone
+            )
+        );
+
         destacadosList.appendChild(item);
       });
     }
 
-    /* ===================== Barra de progreso del modal "en curso" ===================== */
+    /* ===================== Barra de progreso ===================== */
     function progressLabel(ms, tz){
-      const p = fullPartsInTz(ms, tz);
-      const wd = new Intl.DateTimeFormat('es-ES', { timeZone: tz, weekday: 'short' }).format(new Date(ms)).replace('.', '');
-      const niceWd = wd.charAt(0).toUpperCase() + wd.slice(1);
+      const p =
+        fullPartsInTz(
+          ms,
+          tz
+        );
+
+      const wd =
+        new Intl.DateTimeFormat(
+          'es-ES',
+          {
+            timeZone: tz,
+            weekday: 'short'
+          }
+        )
+        .format(new Date(ms))
+        .replace('.', '');
+
+      const niceWd =
+        wd.charAt(0).toUpperCase() +
+        wd.slice(1);
+
       return `${niceWd} ${p.day} ${MESES_ABR[p.month]} · ${pad(p.hour)}:${pad(p.minute)}`;
     }
 
-    function updateModalProgress(event, liveInfo, targetTimeZone){
-      const { startMs, endMs } = liveInfo;
-      const total = endMs - startMs;
-      const now = Date.now();
-      const pct = total > 0 ? Math.min(100, Math.max(0, ((now - startMs) / total) * 100)) : 100;
-      modalProgressFill.style.width = pct + '%';
-      const type = eventType(event);
-      modalProgressFill.style.background = type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--evento)' : 'var(--video)';
-      modalProgressStart.textContent = progressLabel(startMs, targetTimeZone);
-      modalProgressEnd.textContent = progressLabel(endMs, targetTimeZone);
+    function updateModalProgress(
+      event,
+      liveInfo,
+      targetTimeZone
+    ){
+      const {
+        startMs,
+        endMs
+      } = liveInfo;
+
+      const total =
+        endMs - startMs;
+
+      const now =
+        Date.now();
+
+      const pct =
+        total > 0
+          ? Math.min(
+              100,
+              Math.max(
+                0,
+                ((now - startMs) / total) * 100
+              )
+            )
+          : 100;
+
+      modalProgressFill.style.width =
+        pct + '%';
+
+      const type =
+        eventType(event);
+
+      modalProgressFill.style.background =
+        type === 'directo'
+          ? 'var(--live)'
+          : type === 'evento'
+            ? 'var(--evento)'
+            : type === 'video'
+              ? 'var(--video)'
+              : 'var(--encuesta)';
+
+      modalProgressStart.textContent =
+        progressLabel(
+          startMs,
+          targetTimeZone
+        );
+
+      modalProgressEnd.textContent =
+        progressLabel(
+          endMs,
+          targetTimeZone
+        );
     }
 
     /* ===================== Modal ===================== */
-    function openModal(event, ms, targetTimeZone, liveInfo){
-      const type = eventType(event);
-      modal.classList.remove('is-closing');
-      modalEyebrow.textContent = TYPE_LABEL[type];
-      modalEyebrow.style.color = type === 'directo' ? 'var(--live)' : type === 'evento' ? 'var(--evento)' : 'var(--video)';
-      modalTitle.textContent = event.name;
+    function openModal(
+      event,
+      ms,
+      targetTimeZone,
+      liveInfo
+    ){
+      const type =
+        eventType(event);
+
+      modal.classList.remove(
+        'is-closing'
+      );
+
+      modalEyebrow.textContent =
+        TYPE_LABEL[type];
+
+      modalEyebrow.style.color =
+        type === 'directo'
+          ? 'var(--live)'
+          : type === 'evento'
+            ? 'var(--evento)'
+            : type === 'video'
+              ? 'var(--video)'
+              : 'var(--encuesta)';
+
+      modalTitle.textContent =
+        event.name;
+
       if (ms){
-        const startParts = fullPartsInTz(ms, targetTimeZone);
-        const dayLabel = new Intl.DateTimeFormat('es-ES', { timeZone: targetTimeZone, weekday: 'long' }).format(new Date(ms));
-        const niceDayLabel = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
-        let dateText = `${niceDayLabel} ${startParts.day} de ${MESES[startParts.month]} · ${pad(startParts.hour)}:${pad(startParts.minute)}`;
-        const endMs = getEventEndMs(event, ms);
+        const startParts =
+          fullPartsInTz(
+            ms,
+            targetTimeZone
+          );
+
+        const dayLabel =
+          new Intl.DateTimeFormat(
+            'es-ES',
+            {
+              timeZone: targetTimeZone,
+              weekday: 'long'
+            }
+          )
+          .format(new Date(ms));
+
+        const niceDayLabel =
+          dayLabel.charAt(0).toUpperCase() +
+          dayLabel.slice(1);
+
+        let dateText =
+          `${niceDayLabel} ${startParts.day} de ${MESES[startParts.month]} · ${pad(startParts.hour)}:${pad(startParts.minute)}`;
+
+        const endMs =
+          getEventEndMs(
+            event,
+            ms
+          );
+
         if (endMs){
-          const endParts = fullPartsInTz(endMs, targetTimeZone);
-          const sameDay = endParts.year === startParts.year && endParts.month === startParts.month && endParts.day === startParts.day;
+          const endParts =
+            fullPartsInTz(
+              endMs,
+              targetTimeZone
+            );
+
+          const sameDay =
+            endParts.year === startParts.year &&
+            endParts.month === startParts.month &&
+            endParts.day === startParts.day;
+
           if (sameDay){
-            dateText += ` – ${pad(endParts.hour)}:${pad(endParts.minute)}`;
+            dateText +=
+              ` – ${pad(endParts.hour)}:${pad(endParts.minute)}`;
           } else {
-            // El evento termina otro día: mostramos también el día y el mes de finalización.
-            const endDayLabel = new Intl.DateTimeFormat('es-ES', { timeZone: targetTimeZone, weekday: 'long' }).format(new Date(endMs));
-            const niceEndDayLabel = endDayLabel.charAt(0).toUpperCase() + endDayLabel.slice(1);
-            dateText += ` – ${niceEndDayLabel} ${endParts.day} de ${MESES[endParts.month]} · ${pad(endParts.hour)}:${pad(endParts.minute)}`;
+            const endDayLabel =
+              new Intl.DateTimeFormat(
+                'es-ES',
+                {
+                  timeZone: targetTimeZone,
+                  weekday: 'long'
+                }
+              )
+              .format(new Date(endMs));
+
+            const niceEndDayLabel =
+              endDayLabel.charAt(0).toUpperCase() +
+              endDayLabel.slice(1);
+
+            dateText +=
+              ` – ${niceEndDayLabel} ${endParts.day} de ${MESES[endParts.month]} · ${pad(endParts.hour)}:${pad(endParts.minute)}`;
           }
         }
-        modalDate.textContent = dateText;
+
+        modalDate.textContent =
+          dateText;
       } else {
         modalDate.textContent = '';
       }
-      modalContent.textContent = event.content || event.tooltip || '';
 
-      // La barra de progreso SOLO se muestra cuando el modal se abre desde el banner "en directo / en curso".
-      if (progressInterval){ clearInterval(progressInterval); progressInterval = null; }
-      if (liveInfo){
-        modalProgress.style.display = 'block';
-        updateModalProgress(event, liveInfo, targetTimeZone);
-        progressInterval = setInterval(() => updateModalProgress(event, liveInfo, targetTimeZone), 30000);
+      modalContent.textContent =
+        event.description ||
+        event.content ||
+        event.tooltip ||
+        '';
+
+      /* Opciones de encuesta */
+      if (
+        type === 'encuesta' &&
+        Array.isArray(event.options) &&
+        event.options.length
+      ){
+        modalOptions.style.display =
+          'flex';
+
+        modalOptionsList.innerHTML =
+          '';
+
+        event.options.forEach(
+          (option) => {
+            const el =
+              document.createElement('div');
+
+            el.className =
+              'survey-option';
+
+            el.textContent =
+              option;
+
+            modalOptionsList.appendChild(
+              el
+            );
+          }
+        );
       } else {
-        modalProgress.style.display = 'none';
+        modalOptions.style.display =
+          'none';
+
+        modalOptionsList.innerHTML =
+          '';
+      }
+
+      if (progressInterval){
+        clearInterval(
+          progressInterval
+        );
+
+        progressInterval = null;
+      }
+
+      /*
+       * Los directos/eventos/vídeos muestran la barra
+       * únicamente si se abren desde el banner de "en curso".
+       *
+       * Las encuestas muestran siempre su duración,
+       * tanto antes de empezar como mientras están activas.
+       */
+      if (liveInfo){
+        modalProgress.style.display =
+          'block';
+
+        updateModalProgress(
+          event,
+          liveInfo,
+          targetTimeZone
+        );
+
+        progressInterval =
+          setInterval(
+            () =>
+              updateModalProgress(
+                event,
+                liveInfo,
+                targetTimeZone
+              ),
+            1000
+          );
+      } else if (
+        type === 'encuesta' &&
+        ms
+      ){
+        const surveyEndMs =
+          getEventEndMs(
+            event,
+            ms
+          );
+
+        modalProgress.style.display =
+          'block';
+
+        updateModalProgress(
+          event,
+          {
+            startMs: ms,
+            endMs: surveyEndMs
+          },
+          targetTimeZone
+        );
+
+        /*
+         * También actualizamos la barra en tiempo real
+         * cuando abrimos una encuesta desde cualquier sitio.
+         */
+        progressInterval =
+          setInterval(() => {
+            const currentEndMs =
+              getEventEndMs(
+                event,
+                ms
+              );
+
+            updateModalProgress(
+              event,
+              {
+                startMs: ms,
+                endMs: currentEndMs
+              },
+              targetTimeZone
+            );
+          }, 1000);
+      } else {
+        modalProgress.style.display =
+          'none';
       }
 
       if (event.link){
-        modalLink.href = event.link;
-        modalLink.style.display = 'inline-flex';
+        modalLink.href =
+          event.link;
+
+        modalLink.textContent =
+          type === 'encuesta'
+            ? 'Votar encuesta'
+            : 'Ir al enlace';
+
+        modalLink.classList.toggle(
+          'survey',
+          type === 'encuesta'
+        );
+
+        modalLink.style.display =
+          'inline-flex';
       } else {
-        modalLink.style.display = 'none';
+        modalLink.style.display =
+          'none';
+
+        modalLink.classList.remove(
+          'survey'
+        );
       }
-      modalBackdrop.classList.add('active');
-      modal.classList.remove('is-opening');
+
+      modalBackdrop.classList.add(
+        'active'
+      );
+
+      modal.classList.remove(
+        'is-opening'
+      );
+
       void modal.offsetWidth;
-      modal.classList.add('is-opening');
-      modal.addEventListener('animationend', () => modal.classList.remove('is-opening'), { once: true });
+
+      modal.classList.add(
+        'is-opening'
+      );
+
+      modal.addEventListener(
+        'animationend',
+        () =>
+          modal.classList.remove(
+            'is-opening'
+          ),
+        { once:true }
+      );
     }
 
     function closeModal(){
-      if (!modalBackdrop.classList.contains('active')) return;
-      if (progressInterval){ clearInterval(progressInterval); progressInterval = null; }
-      modal.classList.remove('is-opening');
-      modal.classList.add('is-closing');
+      if (
+        !modalBackdrop.classList.contains(
+          'active'
+        )
+      ){
+        return;
+      }
+
+      if (progressInterval){
+        clearInterval(
+          progressInterval
+        );
+
+        progressInterval = null;
+      }
+
+      modal.classList.remove(
+        'is-opening'
+      );
+
+      modal.classList.add(
+        'is-closing'
+      );
+
       const handler = (e) => {
         if (e.target !== modal) return;
-        modalBackdrop.classList.remove('active');
-        modal.classList.remove('is-closing');
-        modal.removeEventListener('animationend', handler);
+
+        modalBackdrop.classList.remove(
+          'active'
+        );
+
+        modal.classList.remove(
+          'is-closing'
+        );
+
+        modal.removeEventListener(
+          'animationend',
+          handler
+        );
       };
-      modal.addEventListener('animationend', handler, { once: true });
+
+      modal.addEventListener(
+        'animationend',
+        handler,
+        { once:true }
+      );
     }
 
     /* ===================== Inicio ===================== */
@@ -1111,75 +2252,252 @@
       renderFeed(targetTimeZone);
     }
 
-    document.getElementById('prevMonth').addEventListener('click', () => {
-      monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1);
-      dayFilter = null;
-      renderMiniCalendar(timezoneSelector.value);
-      renderDestacados(timezoneSelector.value);
-      renderFeed(timezoneSelector.value);
-    });
-    document.getElementById('nextMonth').addEventListener('click', () => {
-      monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1);
-      dayFilter = null;
-      renderMiniCalendar(timezoneSelector.value);
-      renderDestacados(timezoneSelector.value);
-      renderFeed(timezoneSelector.value);
-    });
+    document
+      .getElementById('prevMonth')
+      .addEventListener('click', () => {
+        monthCursor =
+          new Date(
+            monthCursor.getFullYear(),
+            monthCursor.getMonth() - 1,
+            1
+          );
+
+        dayFilter = null;
+
+        renderMiniCalendar(
+          timezoneSelector.value
+        );
+
+        renderDestacados(
+          timezoneSelector.value
+        );
+
+        renderFeed(
+          timezoneSelector.value
+        );
+      });
+
+    document
+      .getElementById('nextMonth')
+      .addEventListener('click', () => {
+        monthCursor =
+          new Date(
+            monthCursor.getFullYear(),
+            monthCursor.getMonth() + 1,
+            1
+          );
+
+        dayFilter = null;
+
+        renderMiniCalendar(
+          timezoneSelector.value
+        );
+
+        renderDestacados(
+          timezoneSelector.value
+        );
+
+        renderFeed(
+          timezoneSelector.value
+        );
+      });
 
     function initSelectors(){
-      const savedTheme = localStorage.getItem('jofun2-theme') || 'oscuro';
-      applyTheme(savedTheme);
+      const savedTheme =
+        localStorage.getItem(
+          'jofun2-theme'
+        ) || 'oscuro';
 
-      const savedTz = localStorage.getItem('jofun2-timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
-      const options = rebuildTimezoneOptions(savedTz, '');
-      const validTz = options.find((opt) => opt.value === savedTz) ? savedTz : 'Europe/Madrid';
-      timezoneSelector.value = validTz;
-      localStorage.setItem('jofun2-timezone', validTz);
-      refreshAll(validTz);
+      applyTheme(
+        savedTheme
+      );
 
-      themeSeg.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-theme]');
-        if (!btn) return;
-        applyTheme(btn.dataset.theme);
-      });
+      const savedTz =
+        localStorage.getItem(
+          'jofun2-timezone'
+        ) ||
+        Intl.DateTimeFormat()
+          .resolvedOptions()
+          .timeZone ||
+        'Europe/Madrid';
 
-      timezoneSelector.addEventListener('change', (e) => {
-        const value = e.target.value;
-        localStorage.setItem('jofun2-timezone', value);
-        dayFilter = null;
-        refreshAll(value);
-      });
+      const options =
+        rebuildTimezoneOptions(
+          savedTz,
+          ''
+        );
 
-      timezoneSearch.addEventListener('input', (e) => {
-        const currentValue = timezoneSelector.value;
-        const filtered = rebuildTimezoneOptions(currentValue, e.target.value);
-        if (filtered.find((opt) => opt.value === currentValue)){
-          timezoneSelector.value = currentValue;
-        } else if (filtered.length > 0){
-          const newValue = filtered[0].value;
-          timezoneSelector.value = newValue;
-          localStorage.setItem('jofun2-timezone', newValue);
-          dayFilter = null;
-          refreshAll(newValue);
+      const validTz =
+        options.find(
+          (opt) =>
+            opt.value === savedTz
+        )
+          ? savedTz
+          : 'Europe/Madrid';
+
+      timezoneSelector.value =
+        validTz;
+
+      localStorage.setItem(
+        'jofun2-timezone',
+        validTz
+      );
+
+      refreshAll(
+        validTz
+      );
+
+      themeSeg.addEventListener(
+        'click',
+        (e) => {
+          const btn =
+            e.target.closest(
+              'button[data-theme]'
+            );
+
+          if (!btn) return;
+
+          applyTheme(
+            btn.dataset.theme
+          );
         }
-      });
+      );
 
-      setInterval(() => refreshAll(timezoneSelector.value), 5 * 60000);
+      timezoneSelector.addEventListener(
+        'change',
+        (e) => {
+          const value =
+            e.target.value;
+
+          localStorage.setItem(
+            'jofun2-timezone',
+            value
+          );
+
+          dayFilter = null;
+
+          refreshAll(
+            value
+          );
+        }
+      );
+
+      timezoneSearch.addEventListener(
+        'input',
+        (e) => {
+          const currentValue =
+            timezoneSelector.value;
+
+          const filtered =
+            rebuildTimezoneOptions(
+              currentValue,
+              e.target.value
+            );
+
+          if (
+            filtered.find(
+              (opt) =>
+                opt.value === currentValue
+            )
+          ){
+            timezoneSelector.value =
+              currentValue;
+          } else if (
+            filtered.length > 0
+          ){
+            const newValue =
+              filtered[0].value;
+
+            timezoneSelector.value =
+              newValue;
+
+            localStorage.setItem(
+              'jofun2-timezone',
+              newValue
+            );
+
+            dayFilter = null;
+
+            refreshAll(
+              newValue
+            );
+          }
+        }
+      );
+
+      /* Refresco general para detectar cambios de estado */
+      setInterval(
+        () =>
+          refreshAll(
+            timezoneSelector.value
+          ),
+        30000
+      );
     }
 
     function fullPartsInTz(ms, tz){
-      const fmt = new Intl.DateTimeFormat('en-US', {
-        timeZone: tz, weekday:'short', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false
-      });
-      const parts = fmt.formatToParts(new Date(ms)).reduce((acc,{type,value}) => { acc[type]=value; return acc; }, {});
+      const fmt =
+        new Intl.DateTimeFormat(
+          'en-US',
+          {
+            timeZone: tz,
+            weekday:'short',
+            year:'numeric',
+            month:'2-digit',
+            day:'2-digit',
+            hour:'2-digit',
+            minute:'2-digit',
+            hour12:false
+          }
+        );
+
+      const parts =
+        fmt.formatToParts(
+          new Date(ms)
+        ).reduce(
+          (acc,{type,value}) => {
+            acc[type] = value;
+            return acc;
+          },
+          {}
+        );
+
       return {
-        dayIndex: WD_MAP[parts.weekday], year: Number(parts.year), month: Number(parts.month) - 1,
-        day: Number(parts.day), hour: Number(parts.hour) % 24, minute: Number(parts.minute)
+        dayIndex:
+          WD_MAP[parts.weekday],
+
+        year:
+          Number(parts.year),
+
+        month:
+          Number(parts.month) - 1,
+
+        day:
+          Number(parts.day),
+
+        hour:
+          Number(parts.hour) % 24,
+
+        minute:
+          Number(parts.minute)
       };
     }
 
-    closeModalBtn.addEventListener('click', closeModal);
-    modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
+    closeModalBtn.addEventListener(
+      'click',
+      closeModal
+    );
+
+    modalBackdrop.addEventListener(
+      'click',
+      (e) => {
+        if (
+          e.target === modalBackdrop
+        ){
+          closeModal();
+        }
+      }
+    );
 
     initSelectors();
   </script>
