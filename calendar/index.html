@@ -235,9 +235,9 @@
   }
 
   .live-survey-progress-fill{
-    position:absolute; inset:0 auto 0 0; height:100%; width:0;
+    position:absolute; inset:0 auto 0 0; height:100%; width:100%;
     border-radius:999px; background:var(--encuesta);
-    transition:width 500ms ease;
+    transition:width 500ms linear;
   }
 
   .live-survey-progress-labels{
@@ -716,7 +716,7 @@
       directo: 'Ahora en directo',
       evento: 'Evento en curso',
       video: 'Vídeo en curso',
-      encuesta: 'En votación ahora'
+      encuesta: 'Encuesta actual'
     };
 
     const EVENT_DURATION_MIN = 120;
@@ -751,10 +751,64 @@
     }
 
     function eventUtcMsForWeek(event, monday){
+      /*
+       * Encuestas:
+       * startDate es la fecha REAL de inicio.
+       * Esto permite que una encuesta con startDate=2026-09-01
+       * empiece el 1 de septiembre aunque "day" tenga otro valor.
+       */
+      if (
+        event.type === 'encuesta' &&
+        event.startDate
+      ){
+        const [sy, sm, sd] =
+          event.startDate.split('-').map(Number);
+
+        const startMonday =
+          mondayOf(new Date(sy, sm - 1, sd));
+
+        const diffWeeks =
+          Math.round(
+            (monday.getTime() - startMonday.getTime()) /
+            (7 * 86400000)
+          );
+
+        const surveyDate =
+          new Date(
+            sy,
+            sm - 1,
+            sd + diffWeeks * 7
+          );
+
+        const [hour, minute] =
+          event.time.split(':').map(Number);
+
+        return localWallToUtc(
+          surveyDate.getFullYear(),
+          surveyDate.getMonth(),
+          surveyDate.getDate(),
+          hour,
+          minute,
+          event.timeZone || 'UTC'
+        );
+      }
+
+      /*
+       * Comportamiento original para directos,
+       * eventos y vídeos.
+       */
       const dayIndex = WEEKDAYS.indexOf(event.day.toLowerCase());
       const [hour, minute] = event.time.split(':').map(Number);
       const target = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + dayIndex);
-      return localWallToUtc(target.getFullYear(), target.getMonth(), target.getDate(), hour, minute, event.timeZone || 'UTC');
+
+      return localWallToUtc(
+        target.getFullYear(),
+        target.getMonth(),
+        target.getDate(),
+        hour,
+        minute,
+        event.timeZone || 'UTC'
+      );
     }
 
     /* Calcula el instante en ms UTC en el que termina un evento o encuesta. */
@@ -834,7 +888,35 @@
 
     function isEventActiveInWeek(event, weekMonday){
       const repeat = event.repeat;
-      if (repeat === undefined || repeat === null || repeat === 'infinite') return true;
+
+      if (
+        repeat === undefined ||
+        repeat === null ||
+        repeat === 'infinite'
+      ){
+        /*
+         * Las encuestas no existen antes de startDate.
+         */
+        if (
+          event.type === 'encuesta' &&
+          event.startDate
+        ){
+          const ordinal =
+            occurrenceOrdinal(
+              event,
+              weekMonday
+            );
+
+          if (
+            ordinal !== null &&
+            ordinal < 1
+          ){
+            return false;
+          }
+        }
+
+        return true;
+      }
 
       const n = Number(repeat);
       if (!Number.isFinite(n) || n < 1) return true;
@@ -884,6 +966,33 @@
 
         const ms = eventUtcMsForWeek(event, wk);
 
+        /*
+         * Encuesta:
+         * solo puede ser "próxima" si todavía no ha empezado.
+         * Si ya ha empezado, NO se devuelve aquí:
+         * getCurrentlyLiveEvent() se encarga de ella.
+         */
+        if (event.type === 'encuesta'){
+          const endMs =
+            getEventEndMs(
+              event,
+              ms
+            );
+
+          if (fromMs >= endMs){
+            continue;
+          }
+
+          if (ms > fromMs){
+            return ms;
+          }
+
+          continue;
+        }
+
+        /*
+         * Resto de tipos: comportamiento original.
+         */
         if (ms >= fromMs) return ms;
       }
 
@@ -924,6 +1033,25 @@
           if (!isEventActiveInWeek(event, wk)) continue;
 
           const ms = eventUtcMsForWeek(event, wk);
+
+          /*
+           * Una encuesta activa ya no pertenece a
+           * "Próximamente".
+           */
+          if (event.type === 'encuesta'){
+            const endMs =
+              getEventEndMs(
+                event,
+                ms
+              );
+
+            if (
+              fromMs >= endMs ||
+              ms <= fromMs
+            ){
+              continue;
+            }
+          }
 
           if (ms >= fromMs){
             results.push({
@@ -1013,6 +1141,7 @@
     /* Busca si hay algún evento/encuesta en curso justo ahora. */
     function getCurrentlyLiveEvent(fromMs = Date.now()){
       const monday = mondayOf(new Date(fromMs));
+
       const prevMonday = new Date(
         monday.getFullYear(),
         monday.getMonth(),
@@ -1028,15 +1157,28 @@
           const startMs = eventUtcMsForWeek(event, wk);
           const endMs = getEventEndMs(event, startMs);
 
+          /*
+           * Una encuesta solo está ACTIVA dentro de:
+           *
+           * inicio <= ahora < final
+           *
+           * Antes → próxima
+           * Después → terminada
+           */
           if (
             fromMs >= startMs &&
             fromMs < endMs
           ){
-            found = {
-              event,
-              startMs,
-              endMs
-            };
+            if (
+              !found ||
+              startMs > found.startMs
+            ){
+              found = {
+                event,
+                startMs,
+                endMs
+              };
+            }
           }
         });
       });
@@ -1059,13 +1201,8 @@
     }
 
     function formatZoneVariant(zone){
-      const parts = zone
-        .split('/')
-        .slice(1)
-        .filter(Boolean);
-
-      return parts.join(' / ')
-        .replace(/_/g, ' ') || zone;
+      const parts = zone.split('/').slice(1).filter(Boolean);
+      return parts.join(' / ').replace(/_/g, ' ') || zone;
     }
 
     function buildGroupedTimezones(){
@@ -1150,18 +1287,14 @@
         }
       });
 
-      options.sort((a, b) =>
-        a.label.localeCompare(b.label, 'es')
-      );
+      options.sort((a, b) => a.label.localeCompare(b.label, 'es'));
 
       timezoneSelector.innerHTML = '';
 
       options.forEach(({ value, label }) => {
         const opt = document.createElement('option');
-
         opt.value = value;
         opt.textContent = label;
-
         timezoneSelector.appendChild(opt);
       });
 
@@ -1282,14 +1415,10 @@
       document
         .querySelectorAll('#themeSeg button')
         .forEach((b) =>
-          b.classList.toggle(
-            'active',
-            b.dataset.theme === themeKey
-          )
+          b.classList.toggle('active', b.dataset.theme === themeKey)
         );
     }
 
-    /* ===================== Referencias DOM ===================== */
     const timezoneSelector = document.getElementById('timezoneSelector');
     const timezoneSearch = document.getElementById('timezoneSearch');
     const themeSeg = document.getElementById('themeSeg');
@@ -1360,7 +1489,7 @@
 
         <div class="live-now-info">
           <div class="lbl">
-            ${isSurvey ? 'Encuesta activa' : `${TYPE_LABEL[type]} en curso`}
+            ${isSurvey ? 'Encuesta actual' : `${TYPE_LABEL[type]} en curso`}
           </div>
 
           <h3>${live.event.name}</h3>
@@ -1422,6 +1551,8 @@
             !current ||
             eventType(current.event) !== 'encuesta'
           ){
+            clearInterval(liveSurveyProgressInterval);
+            liveSurveyProgressInterval = null;
             renderLiveBanner(targetTimeZone);
             return;
           }
@@ -1435,11 +1566,7 @@
       }
     }
 
-    function updateLiveSurveyProgress(
-      startMs,
-      endMs,
-      targetTimeZone
-    ){
+    function updateLiveSurveyProgress(startMs, endMs, targetTimeZone){
       const fill = document.getElementById('liveSurveyProgressFill');
       const startLabel = document.getElementById('liveSurveyProgressStart');
       const endLabel = document.getElementById('liveSurveyProgressEnd');
@@ -1449,24 +1576,35 @@
       const now = Date.now();
       const total = endMs - startMs;
 
+      /*
+       * Tiempo restante:
+       * 100% cuando empieza
+       * 0% cuando termina
+       */
       const pct =
         total > 0
           ? Math.min(
               100,
               Math.max(
                 0,
-                ((now - startMs) / total) * 100
+                ((endMs - now) / total) * 100
               )
             )
-          : 100;
+          : 0;
 
       fill.style.width = pct + '%';
 
       startLabel.textContent =
-        progressLabel(startMs, targetTimeZone);
+        progressLabel(
+          startMs,
+          targetTimeZone
+        );
 
       endLabel.textContent =
-        progressLabel(endMs, targetTimeZone);
+        progressLabel(
+          endMs,
+          targetTimeZone
+        );
     }
 
     /* ===================== "Próximo X" ===================== */
@@ -1478,15 +1616,7 @@
 
         if (!best) return;
 
-        const {
-          hour,
-          minute,
-          day,
-          month
-        } = fullPartsInTz(
-          best.ms,
-          targetTimeZone
-        );
+        const { hour, minute, day, month } = fullPartsInTz(best.ms, targetTimeZone);
 
         const card = document.createElement('div');
 
@@ -1503,10 +1633,21 @@
           dayLabel.charAt(0).toUpperCase() +
           dayLabel.slice(1);
 
+        /*
+         * Para encuesta:
+         * "Próxima encuesta".
+         *
+         * No se inserta ninguna barra en esta tarjeta.
+         */
+        const label =
+          type === 'encuesta'
+            ? 'Próxima encuesta'
+            : `Próximo ${TYPE_LABEL[type].toLowerCase()}`;
+
         card.innerHTML = `
           <span class="kind-tag ${type}">
             <span class="dot"></span>
-            Próximo ${TYPE_LABEL[type].toLowerCase()}
+            ${label}
           </span>
 
           <h3>${best.event.name}</h3>
@@ -1541,10 +1682,7 @@
 
       if (dayFilter){
         list = generateUpcoming(10).filter(({ ms }) => {
-          const p = fullPartsInTz(
-            ms,
-            targetTimeZone
-          );
+          const p = fullPartsInTz(ms, targetTimeZone);
 
           return (
             p.year === dayFilter.year &&
@@ -1568,16 +1706,7 @@
       }
 
       list.forEach(({ event, ms }) => {
-        const {
-          hour,
-          minute,
-          day,
-          month
-        } = fullPartsInTz(
-          ms,
-          targetTimeZone
-        );
-
+        const { hour, minute, day, month } = fullPartsInTz(ms, targetTimeZone);
         const type = eventType(event);
 
         const isLiveNow =
@@ -1647,59 +1776,38 @@
       const byDay = new Map();
 
       occurrences.forEach(({ event, ms }) => {
-        const p = fullPartsInTz(
-          ms,
-          targetTimeZone
-        );
+        const p = fullPartsInTz(ms, targetTimeZone);
 
         if (!byDay.has(p.day)){
           byDay.set(p.day, []);
         }
 
-        byDay.get(p.day).push({
-          event,
-          ms
-        });
+        byDay.get(p.day).push({ event, ms });
       });
 
       calGrid.innerHTML = '';
 
       ['L','M','X','J','V','S','D'].forEach((wd) => {
         const el = document.createElement('div');
-
         el.className = 'cal-wd';
         el.textContent = wd;
-
         calGrid.appendChild(el);
       });
 
-      const firstOfMonth =
-        new Date(year, month, 1);
+      const firstOfMonth = new Date(year, month, 1);
+      const leadBlanks = (firstOfMonth.getDay() + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      const leadBlanks =
-        (firstOfMonth.getDay() + 6) % 7;
-
-      const daysInMonth =
-        new Date(year, month + 1, 0).getDate();
-
-      const todayParts =
-        fullPartsInTz(
-          Date.now(),
-          targetTimeZone
-        );
+      const todayParts = fullPartsInTz(Date.now(), targetTimeZone);
 
       for (let i = 0; i < leadBlanks; i++){
-        const pad_ =
-          document.createElement('div');
-
+        const pad_ = document.createElement('div');
         pad_.className = 'cal-day pad';
-
         calGrid.appendChild(pad_);
       }
 
       for (let d = 1; d <= daysInMonth; d++){
-        const cell =
-          document.createElement('div');
+        const cell = document.createElement('div');
 
         cell.className = 'cal-day';
         cell.textContent = d;
@@ -1710,24 +1818,15 @@
           cell.classList.add('has-event');
 
           if (
-            new Set(
-              dayEvents.map(
-                (x) => eventType(x.event)
-              )
-            ).size > 1
+            new Set(dayEvents.map((x) => eventType(x.event))).size > 1
           ){
             cell.classList.add('multi');
           }
 
-          const pip =
-            document.createElement('span');
-
+          const pip = document.createElement('span');
           pip.className = 'pip';
 
-          const kind =
-            eventType(
-              dayEvents[0].event
-            );
+          const kind = eventType(dayEvents[0].event);
 
           pip.style.background =
             kind === 'directo'
@@ -1756,9 +1855,7 @@
                   day: d
                 };
 
-                renderFeed(
-                  targetTimeZone
-                );
+                renderFeed(targetTimeZone);
               }
             }
           );
@@ -1782,6 +1879,10 @@
       const month = monthCursor.getMonth();
       const now = Date.now();
 
+      /*
+       * ESTO SE MANTIENE IGUAL:
+       * las encuestas siguen apareciendo en destacados.
+       */
       const upcoming =
         monthOccurrences(
           year,
@@ -1807,19 +1908,10 @@
       }
 
       upcoming.forEach(({ event, ms }) => {
-        const {
-          day,
-          month: m
-        } = fullPartsInTz(
-          ms,
-          targetTimeZone
-        );
-
+        const { day, month: m } = fullPartsInTz(ms, targetTimeZone);
         const type = eventType(event);
 
-        const item =
-          document.createElement('div');
-
+        const item = document.createElement('div');
         item.className = 'destacado-item';
 
         item.innerHTML = `
@@ -1861,11 +1953,7 @@
 
     /* ===================== Barra de progreso ===================== */
     function progressLabel(ms, tz){
-      const p =
-        fullPartsInTz(
-          ms,
-          tz
-        );
+      const p = fullPartsInTz(ms, tz);
 
       const wd =
         new Intl.DateTimeFormat(
@@ -1885,38 +1973,48 @@
       return `${niceWd} ${p.day} ${MESES_ABR[p.month]} · ${pad(p.hour)}:${pad(p.minute)}`;
     }
 
-    function updateModalProgress(
-      event,
-      liveInfo,
-      targetTimeZone
-    ){
-      const {
-        startMs,
-        endMs
-      } = liveInfo;
+    function updateModalProgress(event, liveInfo, targetTimeZone){
+      const { startMs, endMs } = liveInfo;
 
-      const total =
-        endMs - startMs;
+      const total = endMs - startMs;
+      const now = Date.now();
 
-      const now =
-        Date.now();
-
+      /*
+       * Encuesta:
+       * tiempo restante = 100 -> 0.
+       *
+       * Directos/eventos/vídeos:
+       * se mantiene 0 -> 100.
+       */
       const pct =
-        total > 0
-          ? Math.min(
-              100,
-              Math.max(
-                0,
-                ((now - startMs) / total) * 100
-              )
+        event.type === 'encuesta'
+          ? (
+              total > 0
+                ? Math.min(
+                    100,
+                    Math.max(
+                      0,
+                      ((endMs - now) / total) * 100
+                    )
+                  )
+                : 0
             )
-          : 100;
+          : (
+              total > 0
+                ? Math.min(
+                    100,
+                    Math.max(
+                      0,
+                      ((now - startMs) / total) * 100
+                    )
+                  )
+                : 100
+            );
 
       modalProgressFill.style.width =
         pct + '%';
 
-      const type =
-        eventType(event);
+      const type = eventType(event);
 
       modalProgressFill.style.background =
         type === 'directo'
@@ -1947,8 +2045,7 @@
       targetTimeZone,
       liveInfo
     ){
-      const type =
-        eventType(event);
+      const type = eventType(event);
 
       modal.classList.remove(
         'is-closing'
@@ -1984,7 +2081,9 @@
               weekday: 'long'
             }
           )
-          .format(new Date(ms));
+          .format(
+            new Date(ms)
+          );
 
         const niceDayLabel =
           dayLabel.charAt(0).toUpperCase() +
@@ -1993,11 +2092,10 @@
         let dateText =
           `${niceDayLabel} ${startParts.day} de ${MESES[startParts.month]} · ${pad(startParts.hour)}:${pad(startParts.minute)}`;
 
-        const endMs =
-          getEventEndMs(
-            event,
-            ms
-          );
+        const endMs = getEventEndMs(
+          event,
+          ms
+        );
 
         if (endMs){
           const endParts =
@@ -2023,7 +2121,9 @@
                   weekday: 'long'
                 }
               )
-              .format(new Date(endMs));
+              .format(
+                new Date(endMs)
+              );
 
             const niceEndDayLabel =
               endDayLabel.charAt(0).toUpperCase() +
@@ -2037,7 +2137,8 @@
         modalDate.textContent =
           dateText;
       } else {
-        modalDate.textContent = '';
+        modalDate.textContent =
+          '';
       }
 
       modalContent.textContent =
@@ -2061,7 +2162,9 @@
         event.options.forEach(
           (option) => {
             const el =
-              document.createElement('div');
+              document.createElement(
+                'div'
+              );
 
             el.className =
               'survey-option';
@@ -2087,17 +2190,17 @@
           progressInterval
         );
 
-        progressInterval = null;
+        progressInterval =
+          null;
       }
 
       /*
-       * Los directos/eventos/vídeos muestran la barra
-       * únicamente si se abren desde el banner de "en curso".
-       *
-       * Las encuestas muestran siempre su duración,
-       * tanto antes de empezar como mientras están activas.
+       * DIRECTOS / EVENTOS / VÍDEOS
+       * No se cambia su comportamiento.
        */
-      if (liveInfo){
+      if (
+        liveInfo
+      ){
         modalProgress.style.display =
           'block';
 
@@ -2117,7 +2220,16 @@
               ),
             1000
           );
-      } else if (
+      }
+
+      /*
+       * ENCUESTA:
+       *
+       * - futura  -> SIN BARRA
+       * - activa  -> CON BARRA
+       * - acabada -> SIN BARRA
+       */
+      else if (
         type === 'encuesta' &&
         ms
       ){
@@ -2127,40 +2239,71 @@
             ms
           );
 
-        modalProgress.style.display =
-          'block';
+        const now =
+          Date.now();
 
-        updateModalProgress(
-          event,
-          {
-            startMs: ms,
-            endMs: surveyEndMs
-          },
-          targetTimeZone
-        );
+        if (
+          now >= ms &&
+          now < surveyEndMs
+        ){
+          modalProgress.style.display =
+            'block';
 
-        /*
-         * También actualizamos la barra en tiempo real
-         * cuando abrimos una encuesta desde cualquier sitio.
-         */
-        progressInterval =
-          setInterval(() => {
-            const currentEndMs =
-              getEventEndMs(
-                event,
-                ms
-              );
+          updateModalProgress(
+            event,
+            {
+              startMs: ms,
+              endMs: surveyEndMs
+            },
+            targetTimeZone
+          );
 
-            updateModalProgress(
-              event,
-              {
-                startMs: ms,
-                endMs: currentEndMs
+          progressInterval =
+            setInterval(
+              () => {
+
+                const currentNow =
+                  Date.now();
+
+                if (
+                  currentNow >=
+                  surveyEndMs
+                ){
+                  clearInterval(
+                    progressInterval
+                  );
+
+                  progressInterval =
+                    null;
+
+                  modalProgress.style.display =
+                    'none';
+
+                  return;
+                }
+
+                updateModalProgress(
+                  event,
+                  {
+                    startMs: ms,
+                    endMs: surveyEndMs
+                  },
+                  targetTimeZone
+                );
               },
-              targetTimeZone
+              1000
             );
-          }, 1000);
-      } else {
+        } else {
+          /*
+           * Todavía no ha empezado o ya ha terminado.
+           * No hay barra.
+           */
+          modalProgress.style.display =
+            'none';
+        }
+      }
+
+      else {
         modalProgress.style.display =
           'none';
       }
@@ -2228,7 +2371,8 @@
           progressInterval
         );
 
-        progressInterval = null;
+        progressInterval =
+          null;
       }
 
       modal.classList.remove(
@@ -2263,7 +2407,6 @@
       );
     }
 
-    /* ===================== Inicio ===================== */
     function refreshAll(targetTimeZone){
       renderLiveBanner(targetTimeZone);
       renderNextRow(targetTimeZone);
@@ -2284,17 +2427,9 @@
 
         dayFilter = null;
 
-        renderMiniCalendar(
-          timezoneSelector.value
-        );
-
-        renderDestacados(
-          timezoneSelector.value
-        );
-
-        renderFeed(
-          timezoneSelector.value
-        );
+        renderMiniCalendar(timezoneSelector.value);
+        renderDestacados(timezoneSelector.value);
+        renderFeed(timezoneSelector.value);
       });
 
     document
@@ -2309,36 +2444,21 @@
 
         dayFilter = null;
 
-        renderMiniCalendar(
-          timezoneSelector.value
-        );
-
-        renderDestacados(
-          timezoneSelector.value
-        );
-
-        renderFeed(
-          timezoneSelector.value
-        );
+        renderMiniCalendar(timezoneSelector.value);
+        renderDestacados(timezoneSelector.value);
+        renderFeed(timezoneSelector.value);
       });
 
     function initSelectors(){
       const savedTheme =
-        localStorage.getItem(
-          'jofun2-theme'
-        ) || 'oscuro';
+        localStorage.getItem('jofun2-theme') ||
+        'oscuro';
 
-      applyTheme(
-        savedTheme
-      );
+      applyTheme(savedTheme);
 
       const savedTz =
-        localStorage.getItem(
-          'jofun2-timezone'
-        ) ||
-        Intl.DateTimeFormat()
-          .resolvedOptions()
-          .timeZone ||
+        localStorage.getItem('jofun2-timezone') ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone ||
         'Europe/Madrid';
 
       const options =
@@ -2349,8 +2469,7 @@
 
       const validTz =
         options.find(
-          (opt) =>
-            opt.value === savedTz
+          (opt) => opt.value === savedTz
         )
           ? savedTz
           : 'Europe/Madrid';
@@ -2363,9 +2482,7 @@
         validTz
       );
 
-      refreshAll(
-        validTz
-      );
+      refreshAll(validTz);
 
       themeSeg.addEventListener(
         'click',
@@ -2377,9 +2494,7 @@
 
           if (!btn) return;
 
-          applyTheme(
-            btn.dataset.theme
-          );
+          applyTheme(btn.dataset.theme);
         }
       );
 
@@ -2396,9 +2511,7 @@
 
           dayFilter = null;
 
-          refreshAll(
-            value
-          );
+          refreshAll(value);
         }
       );
 
@@ -2416,8 +2529,7 @@
 
           if (
             filtered.find(
-              (opt) =>
-                opt.value === currentValue
+              (opt) => opt.value === currentValue
             )
           ){
             timezoneSelector.value =
@@ -2438,14 +2550,11 @@
 
             dayFilter = null;
 
-            refreshAll(
-              newValue
-            );
+            refreshAll(newValue);
           }
         }
       );
 
-      /* Refresco general para detectar cambios de estado */
       setInterval(
         () =>
           refreshAll(
@@ -2511,9 +2620,7 @@
     modalBackdrop.addEventListener(
       'click',
       (e) => {
-        if (
-          e.target === modalBackdrop
-        ){
+        if (e.target === modalBackdrop){
           closeModal();
         }
       }
